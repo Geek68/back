@@ -3,10 +3,8 @@ const router = express.Router();
 const db = require('../config/db');
 const Student = require('../models/Student');
 const Sequelize = require('sequelize');
+const { getAllStudents, getOneStudent, postStudent } = require('../controllers/studentController');
 
-router.get('/', (req, res) => 
-  Student.findAll()
-    .then(students => res.json(students).status(200))
-    .catch(err => console.log(err)));
-
+router.route('/').get(getAllStudents).post(postStudent)
+router.route('/:id').get(getOneStudent)
 module.exports = router;

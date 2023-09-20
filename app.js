@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false } ))
 
 //routes
 app.get('/',(req, res) => res.send('index'))
-app.use('/students', require('./routes/students'));
+app.use('/api/students', require('./routes/students'));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
