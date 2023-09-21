@@ -17,45 +17,87 @@ const getAllStudents = asyncHandler(async (req, res) => {
 //@desc get one student
 //@route GET /api/students/:id
 //@acces Private
-const getOneStudent = asyncHandler(async (req,res) => {
+const getOneStudent = asyncHandler(async (req, res) => {
     const student = await Student.findByPk(req.params.id)
-    if(!student){
-        res.status(400)
+    if (!student) {
+        res.status(400).json({
+            'message': 'Etudiant non existant'
+        })
         throw new Error('this student does not exist')
     }
-    
+
     res.status(200).json(student)
-    
+
 })
 
 
-const postStudent = asyncHandler(async (req, res)=>{
-    const {student_code, name, first_name, cin, email, phone_number, course, level} = req.body
-    if (!(student_code && name && first_name && cin && email && phone_number && course && level )) {
+const postStudent = asyncHandler(async (req, res) => {
+    const { name, first_name, cin, email, phone_number, course, level, birth_place, birth_date } = req.body
+    if (!(name && first_name && cin && email && phone_number && course && level && birth_date && birth_place)) {
         res.status(400)
         throw new Error("Completez tous les champs disponibles")
-        
+
     }
-    
-    const fetchedStudent = await Student.findOne({student_code: student_code})
+
+    const fetchedStudent = await Student.findOne({ where: { cin: cin } })
 
     if (fetchedStudent) {
         res.status(400).json("Etudiant déja existant")
         throw new Error("Etudiant déja existant")
+    } else {
+        const student = await Student.create({
+            name, first_name, cin, email, phone_number, course, level, birth_place, birth_date,
+        })
+
+        res.status(200).json({
+            'message': "Etudiant ajouté avec succès.",
+            'student': student
+        })
+    }
+})
+
+    //@desc update a student
+    //@route PUT /api/students/:id
+    //@acces Private
+    const updateStudent = asyncHandler(async (req, res) => {
+        const fetchedStudent = await Student.findByPk(req.params.id)
+        
+        if (!fetchedStudent) {
+            res.status(400)
+            throw new Error('this student does not exist')
+        }
+        
+                await Student.update(req.body,{ where : {
+                    student_code : req.params.id
+                }
+                
+                }
+                ).then(() => {
+                    res.status(200).send('Etudiant modifié')
+                }).catch(err => {
+                    res.send(err.parent.detail)
+                })   
+
+    })
+
+    const deleteStudent = asyncHandler(async (req,res)=>{
+        const fetchedStudent = await Student.findByPk(req.params.id);
+    if (!fetchedStudent) {
+        res.status(400);
+        throw new Error("this student does not exist");
     }
 
-    const student = await student.create({
-        student_code, name, first_name, cin, email, phone_number, course, level,
-            
-    })
-    
-    res.status(200).json(student)
-    
 
-})
+    await Student.destroy({where:{student_code: req.params.id}});
+    res.status(200).json(`Etudiant ${fetchedStudent.name} supprimé`);
+
+    })
+
 
 module.exports = {
     getAllStudents,
     getOneStudent,
     postStudent,
+    updateStudent,
+    deleteStudent,
 }
