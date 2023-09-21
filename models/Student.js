@@ -1,36 +1,44 @@
-const Sequelize = require('sequelize');
-const db = require('../config/db');
+module.exports = (sequelize, DataTypes) =>{
+  const Student = sequelize.define('Students', {
+      student_code: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING
+      },
+      first_name: {
+        type: DataTypes.STRING
+      },
+      cin: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING
+      },
+      phone_number: {
+        type: DataTypes.STRING
+      },
+      course:{
+        type: DataTypes.STRING
+      },
+      level:{
+        type: DataTypes.STRING
+      },
+      birth_place : {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      birth_date : {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+      },
+  },{
+    timestamps: false
+  });
 
-const Student = db.define('student', {
-  student_code: {
-    type: Sequelize.STRING
-  },
-  name: {
-    type: Sequelize.STRING
-  },
-  first_name: {
-    type: Sequelize.STRING
-  },
-  cin: {
-    type: Sequelize.STRING
-  },
-  email: {
-    type: Sequelize.STRING
-  },
-  phone_number: {
-    type: Sequelize.STRING
-  },
-  course:{
-    type: Sequelize.STRING
-  },
-  level:{
-    type: Sequelize.STRING
-  },
-  
-  
-});
+  return Student
 
-Student.sync().then(() => {
-  console.log('Table created');
-});
-module.exports = Student;
+}
