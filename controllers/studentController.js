@@ -1,6 +1,6 @@
 const Student = require('../models/Student')
 const asyncHandler = require('express-async-handler')
-const bcrypt = require('bcryptjs')
+const { Op } = require('sequelize')
 
 
 //@desc get all students
@@ -32,22 +32,19 @@ const getOneStudent = asyncHandler(async (req, res) => {
 
 
 const postStudent = asyncHandler(async (req, res) => {
-    const { name, first_name, cin, email, phone_number, course, level, birth_place, birth_date } = req.body
-    if (!(name && first_name && cin && email && phone_number && course && level && birth_date && birth_place)) {
-        res.status(400)
-        throw new Error("Completez tous les champs disponibles")
+    const {  cin, email, phone_number } = req.body
+   
 
-    }
+    const fetchedStudent = await Student.findOne({ where:{[Op.or]: [{ cin: cin }, {phone_number: phone_number}, {email: email}
+    ]}
+})
 
-    const fetchedStudent = await Student.findOne({ where: { cin: cin } })
 
     if (fetchedStudent) {
         res.status(400).json("Etudiant déja existant")
         throw new Error("Etudiant déja existant")
     } else {
-        const student = await Student.create({
-            name, first_name, cin, email, phone_number, course, level, birth_place, birth_date,
-        })
+        const student = await Student.create(req.body)
 
         res.status(200).json({
             'message': "Etudiant ajouté avec succès.",
