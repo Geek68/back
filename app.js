@@ -2,7 +2,6 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 require('dotenv').config()
-// const { errorHandler } = require('./middleware/errorMiddleware')
 
 const app = express()
 const port = process.env.PORT || 5000;
@@ -31,7 +30,7 @@ db.sequelize.sync({force: false}).then(()=>{
 //routes
 app.use('/api/login', require('./routes/auth.routes'))
 app.use('/api/user', require('./routes/user.routes'))
-app.use('/api/student', require('./routes/students'))
+app.use('/api/student', require('./routes/student.routes'))
 app.use('/api/prof', require('./routes/prof.routes'))
 
 app.listen(port, () => {
