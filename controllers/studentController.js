@@ -1,4 +1,6 @@
-const Student = require('../models/Student')
+// const Student = require('../models/Student')
+const db = require('../models')
+const {Student} = db
 const asyncHandler = require('express-async-handler')
 const { Op } = require('sequelize')
 
