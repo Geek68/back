@@ -1,8 +1,8 @@
-// const Student = require('../models/Student')
 const db = require('../models')
 const {Student} = db
 const asyncHandler = require('express-async-handler')
 const { Op } = require('sequelize')
+const fs = require('fs')
 
 
 //@desc get all students
@@ -34,19 +34,28 @@ const getOneStudent = asyncHandler(async (req, res) => {
 
 
 const postStudent = asyncHandler(async (req, res) => {
-    const {  cin, email, phone_number } = req.body
-   
+    const { name, first_name, cin, email, phone_number, course, level, birth_place, birth_date } = req.body
 
     const fetchedStudent = await Student.findOne({ where:{[Op.or]: [{ cin: cin }, {phone_number: phone_number}, {email: email}
     ]}
 })
 
-
     if (fetchedStudent) {
         res.status(400).json("Etudiant déja existant")
         throw new Error("Etudiant déja existant")
     } else {
-        const student = await Student.create(req.body)
+        const student = await Student.create({
+            name: name, 
+            first_name: first_name, 
+            cin: cin, 
+            email: email, 
+            phone_number: phone_number, 
+            course: course, 
+            level:level, 
+            birth_place: birth_place, 
+            birth_date: birth_date,
+            profile_picture: req.file.path
+        })
 
         res.status(200).json({
             'message': "Etudiant ajouté avec succès.",
@@ -86,8 +95,9 @@ const postStudent = asyncHandler(async (req, res) => {
         throw new Error("this student does not exist");
     }
 
-
+    
     await Student.destroy({where:{student_code: req.params.id}});
+    fs.unlinkSync(fetchedStudent.profile_picture)
     res.status(200).json(`Etudiant ${fetchedStudent.name} supprimé`);
 
     })

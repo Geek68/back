@@ -19,6 +19,7 @@ app.use((req, res, next) => {
   );
   next();
 });
+app.use(express.static('./public'));
 
 const db = require('./models')
 
