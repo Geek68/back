@@ -5,14 +5,15 @@ module.exports = (sequelize, DataTypes) =>{
         primaryKey: true,
         autoIncrement: true,
       },
-      profile_picture: {
+      profile_pic: {
         type : DataTypes.STRING,
         allowNull: false,
       },
-      name: {
-        type: DataTypes.STRING
+      lastname: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
-      first_name: {
+      firstname: {
         type: DataTypes.STRING
       },
       cin: {
@@ -22,7 +23,7 @@ module.exports = (sequelize, DataTypes) =>{
       email: {
         type: DataTypes.STRING
       },
-      phone_number: {
+      phone: {
         type: DataTypes.STRING
       },
       course:{

@@ -3,9 +3,9 @@ const db = require('../models')
 const {Prof} = db
 
 const CreateProf = async(req, res) => {
-    let {firstname, lastname, phone, title, cin} = req.body
+    let {firstname, lastname, phone, title} = req.body
     Prof.findOne({
-        where : {cin : cin}
+        where : {phone : phone}
     }).then(async _p => {
         if(_p){
             res.status(401).json({message: 'Prof already registered'})
@@ -15,7 +15,6 @@ const CreateProf = async(req, res) => {
                 lastname: lastname,
                 phone: phone,
                 title: title,
-                cin: cin
             }).then(prof => {
                 res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
             }).catch(err =>{

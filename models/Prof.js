@@ -7,11 +7,6 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull: true,
         },
-        cin:{
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
         title:{
             type: DataTypes.STRING,
         },
