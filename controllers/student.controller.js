@@ -35,7 +35,7 @@ const getOneStudent = asyncHandler(async (req, res) => {
 const postStudent = asyncHandler(async (req, res) => {
     const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
 
-    const fetchedStudent = await Student.findOne({ where:{[Op.or]: [{ cin: cin }, {phone_number: phone_number}, {email: email}
+    const fetchedStudent = await Student.findOne({ where:{[Op.or]: [{ cin }, {phone}, {email}
     ]}
 })
 
@@ -43,15 +43,15 @@ const postStudent = asyncHandler(async (req, res) => {
         res.status(400).json({message: "Etudiant déja existant"})
     } else {
         const student = await Student.create({
-            lastname: lastname, 
-            firstname: firstname, 
-            cin: cin, 
-            email: email, 
-            phone: phone_number, 
-            course: course, 
-            level:level, 
-            birth_place: birth_place, 
-            birth_date: birth_date,
+            lastname, 
+            firstname, 
+            cin, 
+            email, 
+            phone, 
+            course, 
+            level, 
+            birth_place, 
+            birth_date,
             profile_pic: req.file.path
         })
 
