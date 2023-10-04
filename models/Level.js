@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) =>{
-    const Niveau = sequelize.define('Niveaux', {
+    const Level = sequelize.define('Levels', {
         code_niveau: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -8,8 +8,9 @@ module.exports = (sequelize, DataTypes) =>{
         designation:{
             type: DataTypes.STRING,
             allowNull : false,
-        }
+        },
+        
     })
-    return Niveau
+    return Level
   
   }
