@@ -111,6 +111,19 @@ const postStudent = asyncHandler(async (req, res) => {
 
     })
 
+    const getPromotion = asyncHandler(async (req,res)=> {
+        const promotion = await Student.findAll({
+            where : {
+                niveauId : req.body.niveauId
+            }
+        }).then(promotion => {
+            res.status(200).json(promotion)
+        }).catch(err =>{
+            res.status(500).json(err.parent.detail)
+        })
+    
+    })
+
 
 module.exports = {
     getAllStudents,
@@ -118,4 +131,5 @@ module.exports = {
     postStudent,
     updateStudent,
     deleteStudent,
+    getPromotion
 }

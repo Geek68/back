@@ -3,9 +3,7 @@ const {Seance} = db
 const asyncHandler = require('express-async-handler')
 
 
-//@desc get all students
-//@route GET /api/students
-//@acces Private
+
 const getAllSeance = asyncHandler(async (req, res) => {
 
     const seances = await Seance.findAll()
@@ -14,9 +12,7 @@ const getAllSeance = asyncHandler(async (req, res) => {
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
-//@acces Private
+
 const getOneSeance = asyncHandler(async (req, res) => {
     const seance = await Seance.findByPk(req.params.id)
     if (!seance) {
@@ -31,7 +27,7 @@ const getOneSeance = asyncHandler(async (req, res) => {
 
 
 const postSeance = asyncHandler(async (req, res) => {
-    const { designation } = req.body
+    const { designation, date_seance } = req.body
 
     const fetchedSeance = await Seance.findOne({ where: {designation : designation}
 })
@@ -40,7 +36,8 @@ const postSeance = asyncHandler(async (req, res) => {
         res.status(400).json({message: "Seance déja existant"})
     } else {
         const seance = await Seance.create({
-           designation
+           designation,
+           date_seance
         })
 
         res.status(200).json({
@@ -54,7 +51,7 @@ const postSeance = asyncHandler(async (req, res) => {
     //@route PUT /api/students/:id
     //@acces Private
     const updateSeance = asyncHandler(async (req, res) => {
-        const { designation } = req.body
+        const { designation, date_seance } = req.body
         const fetchedSeance = await Seance.findByPk(req.params.id)
         
         if (!fetchedSeance) {
@@ -62,7 +59,8 @@ const postSeance = asyncHandler(async (req, res) => {
         }
         
                 await Seance.update({
-                   designation
+                   designation,
+                   date_seance
                 },{ where : {
                     code_seance : req.params.id
                 }

@@ -1,5 +1,5 @@
 const db = require('../models')
-const {Matiere} = db
+const {Matiere, Prof} = db
 const asyncHandler = require('express-async-handler')
 
 
@@ -88,6 +88,22 @@ const postMatiere = asyncHandler(async (req, res) => {
     res.status(200).json({message : `Matiere ${fetchedMatiere.designation} supprimée`});
 
     })
+    
+
+    const getMatierByProfId = asyncHandler(async (req, res, profId) => {
+        const matiereProf = await Prof.find({
+            include: Matiere,
+            where : {
+                id: {profId}
+            }
+        }).then(()=>{
+            res.status(200).json(matiereProf)
+        }).catch(err => {
+            res.status(500).json(err.parent.detail)
+        })
+
+        
+    })
 
 
 module.exports = {
@@ -96,4 +112,5 @@ module.exports = {
     postMatiere,
     updateMatiere,
     deleteMatiere,
+    getMatierByProfId,
 }
