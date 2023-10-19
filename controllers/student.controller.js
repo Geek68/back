@@ -116,7 +116,7 @@ const postStudent = asyncHandler(async (req, res) => {
             where : {
                 niveauId : req.body.niveauId
             }
-        }).then(promotion => {
+        }).then(()=> {
             res.status(200).json(promotion)
         }).catch(err =>{
             res.status(500).json(err.parent.detail)
