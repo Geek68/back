@@ -9,7 +9,7 @@ const corOptions = {
   origin:`http://localhost:${port}`
 }
 
-app.use(cors(corOptions))
+app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false } ))
 app.use((req, res, next) => {
