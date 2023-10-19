@@ -33,6 +33,11 @@ app.use('/api/login', require('./routes/auth.routes'))
 app.use('/api/user', require('./routes/user.routes'))
 app.use('/api/student', require('./routes/student.routes'))
 app.use('/api/prof', require('./routes/prof.routes'))
+app.use('/api/parcours', require('./routes/parcours.routes'))
+app.use('/api/salle', require('./routes/salle.routes'))
+app.use('/api/seance', require('./routes/seance.routes'))
+app.use('/api/niveau', require('./routes/level.routes'))
+app.use('/api/matiere', require('./routes/matiere.routes'))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

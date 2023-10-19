@@ -66,19 +66,32 @@ const postStudent = asyncHandler(async (req, res) => {
     //@route PUT /api/students/:id
     //@acces Private
     const updateStudent = asyncHandler(async (req, res) => {
+        const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
         const fetchedStudent = await Student.findByPk(req.params.id)
         
         if (!fetchedStudent) {
             res.status(400).json({message : 'this student does not exist'})
         }
         
-                await Student.update(req.body,{ where : {
+                await Student.update({
+                    lastname, 
+                    firstname, 
+                    cin, 
+                    email, 
+                    phone, 
+                    course, 
+                    level, 
+                    birth_place, 
+                    birth_date,
+                    profile_pic: req.file.path
+                },{ where : {
                     student_code : req.params.id
                 }
 
                 
                 }
                 ).then(() => {
+                    fs.unlinkSync(fetchedStudent.profile_pic)
                     res.status(200).send('Etudiant modifié')
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})

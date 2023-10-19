@@ -86,12 +86,12 @@ db.Matiere.belongsTo(db.Niveau,{
     foreignKey: 'niveauId', targetKey: 'code_niveau'
 })
 
-db.Seance.hasMany(db.Student,{
-    foreignKey: 'seanceId', targetKey: 'code_seance'
-})
-db.Student.belongsTo(db.Seance,{
-    foreignKey: 'seanceId', targetKey: 'code_seance'
-})
+// db.Seance.hasMany(db.Student,{
+//     foreignKey: 'seanceId', targetKey: 'code_seance'
+// })
+// db.Student.belongsTo(db.Seance,{
+//     foreignKey: 'seanceId', targetKey: 'code_seance'
+// })
 
 db.Seance.hasOne(db.Matiere,{
     foreignKey: 'seanceId', targetKey: 'code_seance'

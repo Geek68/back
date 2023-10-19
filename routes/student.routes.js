@@ -6,5 +6,5 @@ const { upload } = require('../middlewares/uploadImgMiddleware');
 
 
 router.route('/').get(getAllStudents).post(upload, postStudent)
-router.route('/:id').get(getOneStudent).put(updateStudent).delete(deleteStudent)
+router.route('/:id').get(getOneStudent).put(upload, updateStudent).delete(deleteStudent)
 module.exports = router;

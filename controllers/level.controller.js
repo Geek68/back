@@ -1,0 +1,99 @@
+const db = require('../models')
+const {Niveau} = db
+const asyncHandler = require('express-async-handler')
+
+
+//@desc get all students
+//@route GET /api/students
+//@acces Private
+const getAllNiveau = asyncHandler(async (req, res) => {
+
+    const niveaux = await Niveau.findAll()
+
+    res.status(200).json(niveaux)
+}
+)
+
+//@desc get one student
+//@route GET /api/students/:id
+//@acces Private
+const getOneNiveau = asyncHandler(async (req, res) => {
+    const niveau = await Niveau.findByPk(req.params.id)
+    if (!niveau) {
+        res.status(400).json({
+            message: 'Niveau non existant'
+        })
+    }
+
+    res.status(200).json(niveau)
+
+})
+
+
+const postNiveau = asyncHandler(async (req, res) => {
+    const { designation } = req.body
+
+    const fetchedNiveau = await Niveau.findOne({ where: {designation : designation}
+})
+
+    if (fetchedNiveau) {
+        res.status(400).json({message: "Niveau déja existant"})
+    } else {
+        const niveau = await Niveau.create({
+           designation
+        })
+
+        res.status(200).json({
+            'message': "Niveau ajouté avec succès.",
+            'Niveau': niveau
+        })
+    }
+})
+
+    //@desc update a student
+    //@route PUT /api/students/:id
+    //@acces Private
+    const updateNiveau = asyncHandler(async (req, res) => {
+        const { designation } = req.body
+        const fetchedNiveau = await Niveau.findByPk(req.params.id)
+        
+        if (!fetchedNiveau) {
+            res.status(400).json({message : 'Niveau non existante'})
+        }
+        
+                await Niveau.update({
+                   designation
+                },{ where : {
+                    code_niveau : req.params.id
+                }
+
+                
+                }
+                ).then(() => {
+                    
+                    res.status(200).send('Niveau modifiée')
+                }).catch(err => {
+                    res.status(500).json({message: err.parent.detail})
+                })   
+
+    })
+
+    const deleteNiveau = asyncHandler(async (req,res)=>{
+        const fetchedNiveau = await Niveau.findByPk(req.params.id);
+    if (!fetchedNiveau) {
+        res.status(400).json({message : "Niveau non existante" });
+    }
+
+    await Niveau.destroy({where:{code_Niveau: req.params.id}});
+    res.status(200).json({message : `Niveau ${fetchedNiveau.designation} supprimée`});
+
+    })
+
+
+module.exports = {
+    getAllNiveau,
+    getOneNiveau,
+    postNiveau,
+    updateNiveau,
+    deleteNiveau,
+}
