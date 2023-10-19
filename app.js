@@ -1,7 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-require("dotenv").config();
+const express = require('express')
+const cors = require('cors')
+const bodyParser = require('body-parser')
+require('dotenv').config()
+const { handleStart } = require('./middlewares/testData')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -20,14 +21,11 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static("./public"));
+const db = require('./models')
 
-const db = require("./models");
-const { handleStart } = require("./middlewares/testData");
-db.sequelize.sync({ force: false }).then(() => {
-  console.log("DB sync");
+db.sequelize.sync({force: false}).then(()=>{
+  handleStart();
 });
-
-handleStart();
 
 //routes
 app.use("/api/login", require("./routes/auth.routes"));
