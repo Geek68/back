@@ -22,10 +22,14 @@ app.use((req, res, next) => {
 app.use(express.static('./public'));
 
 const db = require('./models')
-
+const { testParcours } = require('./middlewares/testData')
 db.sequelize.sync({force: false}).then(()=>{
     console.log("DB sync");
 });
+
+testParcours()
+
+
 
 
 //routes
