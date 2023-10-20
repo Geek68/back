@@ -6,27 +6,29 @@ const { Prof, Matiere, Seance, UserAccount } = db
 
 
 const CreateProf = async (req, res) => {
-    let { firstname, lastname, phone, title } = req.body
+    let { firstname, lastname, phone, title, email } = req.body
     Prof.findOne({
         where: { phone: phone }
     }).then(async _p => {
         if (_p) {
             res.status(401).json({ message: 'Prof already registered' })
-        } else {
-            await Prof.create({
-                firstname: firstname,
-                lastname: lastname,
-                phone: phone,
-                email: email,
-                title: title,
-            }).then(prof => {
-                res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
-                CreateUserAccount(firstname, lastname, prof.id)
-            }).catch(err =>{
-                console.error(err)
-                res.status(500).json({ message: err })
-            })
         }
+        await Prof.create({
+            firstname: firstname,
+            lastname: lastname,
+            phone: phone,
+            email: email,
+            title: title,
+        }).then(prof => {
+            res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
+            CreateUserAccount(firstname, lastname, prof.id)
+        }).catch(err =>{
+            console.error(err)
+            res.status(500).json({ message: err })
+        })
+         
+           
+        
     }).catch(err => res.status(500).json({ message: err }))
 }
 
@@ -81,11 +83,14 @@ const UpdateProf = async (req, res) => {
 
 const DeleteProf = async (req, res) => {
     let { id } = req.params
+    const prof = await Prof.findByPk(id,{
+        include: UserAccount
+    })
     await Prof.destroy({
         where : {id : id}
     }).then(response => {
         res.status(200).json({message: 'Prof deleted'})
-        DeleteUserAccount(id)
+        DeleteUserAccount(prof.UserAccount.id)
     })
 }
 

@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
+const nodemailer = require('nodemailer');
+
 
 const {UserAccount, Prof} = db
 
@@ -13,8 +15,43 @@ const CreateUserAccount = async(firstname, lastname, profId) => {
         profId: profId,
     }).then(UserAccount => {
         console.log("Account Created")
-        // ETO MANDEFA MAIL 
-        //passw sy login alefa message
+        // let config = {
+        //     service: 'gmail', // your email domain
+        //     auth: {
+        //         user: process.env.GMAIL,   // your email address
+        //         pass: process.env.PASSWORDGMAIL // your password
+        //     }
+        // }
+        // let transporter = nodemailer.createTransport(config);
+        // getprof = Prof.findByPk(profId)
+        // let message = {
+        //     from: 'kokorikogasy@gmail.com', // sender address
+        //     to: getprof.email , // list of receivers
+        //     subject: 'Your login and password', // Subject line
+        //     text: "Your password is"+UserAccount.password+" and login is"+UserAccount.login, // html body
+        //     // attachments: [ // use URL as an attachment
+        //     //     {
+        //     //       filename: 'receipt_test.pdf',
+        //     //       path: 'receipt_test.pdf',
+        //     //       cid: 'uniqreceipt_test.pdf' 
+        //     //     }
+        //     // ]
+        // };
+    
+        // transporter.sendMail(message).then((info) => {
+        //     // return res.status(201).json(
+        //     //     {
+        //     //         msg: "Email sent",
+        //     //         info: info.messageId,
+        //     //         preview: nodemailer.getTestMessageUrl(info)
+        //     //     }
+        //     // )
+        //     console.log('Mail envoyé')
+        // }).catch((err) => {
+        //     // return res.status(500).json({ msg: err });
+        //     console.log(err)
+        // }
+        // );
         console.log('======>', passw, login)
     }).catch(err =>{
         console.error(err)
