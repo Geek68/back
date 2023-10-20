@@ -110,6 +110,15 @@ db.Matiere.belongsTo(db.Prof,{
 })
 
 
+db.Prof.hasMany(db.Seance,{
+    foreignKey: 'profId', targetKey: 'id'
+})
+
+db.Seance.belongsTo(db.Prof,{
+    foreignKey: 'profId', targetKey: 'id'
+})
+
+
 db.Niveau.hasMany(db.Student,{
     foreignKey: 'niveauId', targetKey: 'code_niveau'
 })

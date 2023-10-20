@@ -3,9 +3,6 @@ const {Niveau} = db
 const asyncHandler = require('express-async-handler')
 
 
-//@desc get all students
-//@route GET /api/students
-//@acces Private
 const getAllNiveau = asyncHandler(async (req, res) => {
 
     const niveaux = await Niveau.findAll()
@@ -14,9 +11,7 @@ const getAllNiveau = asyncHandler(async (req, res) => {
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
-//@acces Private
+
 const getOneNiveau = asyncHandler(async (req, res) => {
     const niveau = await Niveau.findByPk(req.params.id)
     if (!niveau) {
@@ -50,9 +45,6 @@ const postNiveau = asyncHandler(async (req, res) => {
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
     const updateNiveau = asyncHandler(async (req, res) => {
         const { designation } = req.body
         const fetchedNiveau = await Niveau.findByPk(req.params.id)

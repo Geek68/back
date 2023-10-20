@@ -27,7 +27,8 @@ const getOneSeance = asyncHandler(async (req, res) => {
 
 
 const postSeance = asyncHandler(async (req, res) => {
-    const { designation, date_seance } = req.body
+    const { designation } = req.body
+    const date = new Date()
 
     const fetchedSeance = await Seance.findOne({ where: {designation : designation}
 })
@@ -37,7 +38,7 @@ const postSeance = asyncHandler(async (req, res) => {
     } else {
         const seance = await Seance.create({
            designation,
-           date_seance
+           date_seance: date
         })
 
         res.status(200).json({
@@ -47,9 +48,7 @@ const postSeance = asyncHandler(async (req, res) => {
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
+
     const updateSeance = asyncHandler(async (req, res) => {
         const { designation, date_seance } = req.body
         const fetchedSeance = await Seance.findByPk(req.params.id)

@@ -3,9 +3,6 @@ const {Salle} = db
 const asyncHandler = require('express-async-handler')
 
 
-//@desc get all students
-//@route GET /api/students
-//@acces Private
 const getAllSalle = asyncHandler(async (req, res) => {
 
     const Salles = await Salle.findAll()
@@ -14,9 +11,7 @@ const getAllSalle = asyncHandler(async (req, res) => {
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
-//@acces Private
+
 const getOneSalle = asyncHandler(async (req, res) => {
     const salle = await Salle.findByPk(req.params.id)
     if (!salle) {
@@ -50,9 +45,7 @@ const postSalle = asyncHandler(async (req, res) => {
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
+
     const updateSalle = asyncHandler(async (req, res) => {
         const { designation } = req.body
         const fetchedSalle = await Salle.findByPk(req.params.id)
