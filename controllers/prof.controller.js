@@ -21,7 +21,9 @@ const CreateProf = async(req, res) => {
                 title: title,
             }).then(prof => {
                 res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
-                CreateUserAccount(firstname, lastname, prof.id)
+                CreateUserAccount(firstname, lastname, prof.id).then(() => {
+                    // ETO NO MANDEFA NY MAIL....
+                })
             }).catch(err =>{
                 console.error(err)
                 res.status(500).json({message: err})
