@@ -31,9 +31,19 @@ const CreateProf = async (req, res) => {
 }
 
 const FindProf = async (req, res) => {
-    await Prof.findAll()
-        .then(profs => res.json({ profs: profs }))
-        .catch(err => res.status(500).json({ message: err }))
+    await Prof.findAll({
+        include: [{
+            model: Matiere
+        },
+        {
+            model: Seance
+        },
+        {
+            model: UserAccount
+        }]
+    })
+    .then(profs => res.json({profs : profs}))
+    .catch(err => res.status(500).json({message: err}))
 }
 
 const FindProfById = async (req, res) => {
