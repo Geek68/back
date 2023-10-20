@@ -45,9 +45,9 @@ const FindProfById = async (req, res) => {
         {
             model: Seance
         },
-    {
-        model: UserAccount
-    }]
+        {
+            model: UserAccount
+        }]
     }).then(prof => prof ? res.status(200).json({ data: prof, message: 'Prof found' }) : res.status(404).json({ message: 'prof not found' })
     ).catch(err => {
         console.error(err)
