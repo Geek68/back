@@ -3,32 +3,17 @@ const db = require('../models')
 
 const {UserAccount, Prof} = db
 
-const CreateUserAccount = (req, res) => {
-    UserAccount.findOne({
-        where : {ProfId : req.body.profId}
-    }).then(async _p => {
-        if(_p){
-            res.status(401).json({message: 'Prof already has an account'})
-        }else{
-            Prof.findByPk(req.body.profId).then(async prof => {
-                if(prof){
-                    await UserAccount.create({
-                        login: `${prof.firstname} ${prof.lastname}`,
-                        password: bcrypt.hashSync(generateRadomPass(), 8),
-                        ProfId: req.body.profId,
-                    }).then(UserAccount => {
-                        res.status(201).json({message: 'UserAcount created', data:UserAccount})
-                    }).catch(err =>{
-                        console.error(err)
-                        res.status(500).json({message: err})
-                    })
-                }else{
-                    res.status(404).json({message: 'prof not found'})
-                }
-            })
-            
-        }
-    }).catch(err => res.status(500).json({message: err}))
+const CreateUserAccount = async(firstname, lastname, profId) => {
+    console.log(firstname, lastname, profId)
+    await UserAccount.create({
+        login: `${firstname} ${lastname}`,
+        password: bcrypt.hashSync(generateRadomPass(), 8),
+        profId: profId,
+    }).then(UserAccount => {
+        console.log("Account Created")
+    }).catch(err =>{
+        console.error(err)
+    })
 }
 
 const FindUserAccount = async(req, res) => {
@@ -95,11 +80,10 @@ const ChangePasswordAccount = async(req, res) => {
     }).catch(err => res.status(500).json({message: err}))
 }
 
-const DeleteUserAccount = async(req, res) => {
-    let {id} = req.params
+const DeleteUserAccount = async(profId) => {
     await UserAccount.destroy({
-        where : {id : id}
-    }).then(response => res.status(200).json({message: 'UserAccount deleted'}))
+        where : {id : profId}
+    }).then(response => console.log('UserAccount deleted'))
 }
 
 

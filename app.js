@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 app.use(express.static("./public"));
 const db = require('./models')
 
-db.sequelize.sync({force: false}).then(()=>{
+db.sequelize.sync({force: false, alter:true}).then(()=>{
   handleStart();
 });
 

@@ -1,9 +1,12 @@
+const { CreateUserAccount, DeleteUserAccount } = require('../controllers/userAccount.controller');
+
 const db = require('../models')
 
-const {Prof} = db
+const {UserAccount,Prof} = db
 
 const CreateProf = async(req, res) => {
-    let {firstname, lastname, phone, title} = req.body
+    console.log('req--------body', req.body)
+    let {firstname, lastname, phone, title, email} = req.body
     Prof.findOne({
         where : {phone : phone}
     }).then(async _p => {
@@ -14,9 +17,11 @@ const CreateProf = async(req, res) => {
                 firstname: firstname,
                 lastname: lastname,
                 phone: phone,
+                email: email,
                 title: title,
             }).then(prof => {
                 res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
+                CreateUserAccount(firstname, lastname, prof.id)
             }).catch(err =>{
                 console.error(err)
                 res.status(500).json({message: err})
@@ -26,14 +31,22 @@ const CreateProf = async(req, res) => {
 }
 
 const FindProf = async(req, res) => {
-    await Prof.findAll()
+    await Prof.findAll({
+        include: {
+            model: UserAccount
+        }
+    })
     .then(profs => res.json({profs : profs}))
     .catch(err => res.status(500).json({message: err}))
 }
 
 const FindProfById = async(req, res) => {
     let {id} = req.params
-    await Prof.findByPk(id).then(prof => prof ? res.status(200).json({data: prof, message: 'Prof found'}) : res.status(404).json({message: 'prof not found'})
+    await Prof.findByPk(id, {
+        include: {
+            model: UserAccount
+        }
+    }).then(prof => prof ? res.status(200).json({data: prof, message: 'Prof found'}) : res.status(404).json({message: 'prof not found'})
     ).catch(err => {
         console.error(err)
         res.status(500).json({message: err})
@@ -58,7 +71,10 @@ const DeleteProf = async(req, res) => {
     let {id} = req.params
     await Prof.destroy({
         where : {id : id}
-    }).then(response => res.status(200).json({message: 'Prof deleted'}))
+    }).then(response => {
+        res.status(200).json({message: 'Prof deleted'})
+        DeleteUserAccount(id)
+    })
 }
 
 
