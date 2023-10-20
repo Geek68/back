@@ -5,12 +5,17 @@ const {UserAccount, Prof} = db
 
 const CreateUserAccount = async(firstname, lastname, profId) => {
     console.log(firstname, lastname, profId)
+    const passw = generateRadomPass()
+    const login = `${firstname} ${lastname}`
     await UserAccount.create({
-        login: `${firstname} ${lastname}`,
-        password: bcrypt.hashSync(generateRadomPass(), 8),
+        login,
+        password: bcrypt.hashSync(passw, 8),
         profId: profId,
     }).then(UserAccount => {
         console.log("Account Created")
+        // ETO MANDEFA MAIL 
+        //passw sy login alefa message
+        console.log({passw, login})
     }).catch(err =>{
         console.error(err)
     })
