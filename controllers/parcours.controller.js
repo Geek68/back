@@ -3,9 +3,7 @@ const {Parcours} = db
 const asyncHandler = require('express-async-handler')
 
 
-//@desc get all students
-//@route GET /api/students
-//@acces Private
+
 const getAllParcours = asyncHandler(async (req, res) => {
 
     const parcours = await Parcours.findAll()
@@ -14,9 +12,7 @@ const getAllParcours = asyncHandler(async (req, res) => {
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
-//@acces Private
+
 const getOneParcours = asyncHandler(async (req, res) => {
     const parcours = await Parcours.findByPk(req.params.id)
     if (!parcours) {
@@ -50,9 +46,7 @@ const postParcours = asyncHandler(async (req, res) => {
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
+
     const updateParcours = asyncHandler(async (req, res) => {
         const { designation } = req.body
         const fetchedParcours = await Parcours.findByPk(req.params.id)

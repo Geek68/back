@@ -1,11 +1,9 @@
 const db = require('../models')
-const {Matiere, Prof} = db
+const {Matiere} = db
 const asyncHandler = require('express-async-handler')
 
 
-//@desc get all students
-//@route GET /api/students
-//@acces Private
+
 const getAllMatiere = asyncHandler(async (req, res) => {
 
     const matieres = await Matiere.findAll()
@@ -14,9 +12,7 @@ const getAllMatiere = asyncHandler(async (req, res) => {
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
-//@acces Private
+
 const getOneMatiere = asyncHandler(async (req, res) => {
     const matiere = await Matiere.findByPk(req.params.id)
     if (!matiere) {
@@ -50,9 +46,6 @@ const postMatiere = asyncHandler(async (req, res) => {
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
     const updateMatiere = asyncHandler(async (req, res) => {
         const { designation } = req.body
         const fetchedMatiere = await Matiere.findByPk(req.params.id)
@@ -90,20 +83,7 @@ const postMatiere = asyncHandler(async (req, res) => {
     })
     
 
-    const getMatierByProfId = asyncHandler(async (req, res, profId) => {
-        const matiereProf = await Prof.find({
-            include: Matiere,
-            where : {
-                id: {profId}
-            }
-        }).then(()=>{
-            res.status(200).json(matiereProf)
-        }).catch(err => {
-            res.status(500).json(err.parent.detail)
-        })
 
-        
-    })
 
 
 module.exports = {
@@ -112,5 +92,4 @@ module.exports = {
     postMatiere,
     updateMatiere,
     deleteMatiere,
-    getMatierByProfId,
 }
