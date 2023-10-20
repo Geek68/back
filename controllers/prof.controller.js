@@ -88,6 +88,5 @@ module.exports = {
     FindProfById,
     UpdateProf,
     DeleteProf,
-    // getMatierByProfId,
 
 }
