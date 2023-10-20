@@ -35,23 +35,25 @@ db.Matiere = require('./Matiere')(sequelize, DataTypes)
 db.Niveau = require('./Level')(sequelize, DataTypes)
 db.Parcours = require('./Parcours')(sequelize, DataTypes)
 db.Salle = require('./Salle')(sequelize, DataTypes)
+db.Absence = require('./Absence')(sequelize, DataTypes)
 
-const Absence = sequelize.define('Absences', {
-    code_etudiant: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: db.Student, 
-            key: 'student_code'
-          }
-      },
-    code_seance :{
-        type: DataTypes.INTEGER,
-        references: {
-            model: db.Seance, 
-            key: 'code_seance'
-          }
-    }
-})
+
+// const Absence = sequelize.define('Absences', {
+//     code_etudiant: {
+//         type: DataTypes.INTEGER,
+//         references: {
+//             model: db.Student, 
+//             key: 'student_code'
+//           }
+//       },
+//     code_seance :{
+//         type: DataTypes.INTEGER,
+//         references: {
+//             model: db.Seance, 
+//             key: 'code_seance'
+//           }
+//     }
+// })
 
 
 //ASSOCIATIONS
@@ -62,8 +64,9 @@ db.UserAccount.belongsTo(db.Prof,{
     foreignKey: 'profId', targetKey: 'id'
 })
 
-db.Seance.belongsToMany(db.Student, {through: Absence, foreignKey: 'seanceId'})
-db.Student.belongsToMany(db.Seance, {through: Absence, foreignKey: 'studentId'})
+db.Seance.belongsToMany(db.Student, {through: db.Absence, foreignKey: 'seanceId'})
+db.Student.belongsToMany(db.Seance, {through: db.Absence, foreignKey: 'studentId'})
+
 
 db.Parcours.hasMany(db.Niveau,{
     foreignKey: 'parcoursId', targetKey: 'code_parcours'
@@ -109,7 +112,6 @@ db.Matiere.belongsTo(db.Prof,{
     foreignKey: 'profId', targetKey: 'id'
 })
 
-
 db.Prof.hasMany(db.Seance,{
     foreignKey: 'profId', targetKey: 'id'
 })
@@ -117,6 +119,7 @@ db.Prof.hasMany(db.Seance,{
 db.Seance.belongsTo(db.Prof,{
     foreignKey: 'profId', targetKey: 'id'
 })
+
 
 
 db.Niveau.hasMany(db.Student,{
