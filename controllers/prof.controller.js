@@ -80,16 +80,33 @@ const FindProfById = async (req, res) => {
 
 const UpdateProf = async (req, res) => {
     let { id } = req.params
-    await Prof.update(req.body, {
+    const { lastname, firstname, title, email, phone } = req.body
+    const fetchedProf = await Prof.findByPk(id)
+
+    if (!fetchedProf) {
+        res.status(400).json({message : 'this Prof does not exist'})
+    }
+        
+    await Prof.update({
+        firstname, 
+        lastname, 
+        title, 
+        profil_pic_path: req.file.path,
+        email, 
+        phone
+    }, {
         where: { id: id }
     })
-        .then(_ => {
-            Prof.findByPk(id).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
-        })
-        .catch(err => {
-            console.error(err)
-            res.status(500).json({ message: err })
-        })
+    .then(_ => {
+        if(fs.existsSync(fetchedProf.profil_pic_path)){        
+            fs.unlinkSync(fetchedProf.profil_pic_path)
+        }
+        Prof.findByPk(id).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
+    })
+    .catch(err => {
+        console.error(err)
+        res.status(500).json({ message: err })
+    })
 }
 
 const DeleteProf = async (req, res) => {
