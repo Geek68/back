@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) =>{
         title:{
             type: DataTypes.STRING,
         },
+        profil_pic_path:{
+            type: DataTypes.STRING,
+        },
         email:{
             type: DataTypes.STRING,
             unique: true,
@@ -18,7 +21,12 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             unique: true,
         },
-    })
+    },{
+        indexes: [{
+            unique: true,
+            fields: ['firstname', 'lastname'] // you can use multiple columns as well here
+        }]
+    });
     return Prof
   
   }
