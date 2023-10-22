@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { CreateProf, FindProfById, FindProf, UpdateProf, DeleteProf } = require('../controllers/prof.controller');
+const { InitCreateProf, FindProfById, FindProf, UpdateProf, DeleteProf } = require('../controllers/prof.controller');
+const { uploadXlsxFile } = require('../middlewares/uploadExcelFile')
 
-router.route('/').get(FindProf).post(CreateProf)
+router.route('/').get(FindProf)
+router.route('/uploadProf').post(uploadXlsxFile, InitCreateProf)
 router.route('/:id').get(FindProfById).put(UpdateProf).delete(DeleteProf)
 
 

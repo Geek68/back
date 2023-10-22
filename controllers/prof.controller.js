@@ -1,35 +1,44 @@
 const { CreateUserAccount, DeleteUserAccount } = require('../controllers/userAccount.controller');
+const fs = require('fs');
+const reader = require ('xlsx')
 
 const db = require('../models')
 
 const { Prof, Matiere, Seance, UserAccount } = db
 
 
-const CreateProf = async (req, res) => {
-    let { firstname, lastname, phone, title, email } = req.body
-    Prof.findOne({
-        where: { phone: phone }
-    }).then(async _p => {
-        if (_p) {
-            res.status(401).json({ message: 'Prof already registered' })
+const InitCreateProf = async (req, res) => {
+    const datas = []
+    try{
+        const file = reader.readFile(req.file.destination+'/'+req.file.filename)
+        const sheetNames = file.SheetNames
+
+        if(sheetNames.length == 0){
+            res.status(200).json({message: 'Aucun nouveau élèment disponible'})
         }
-        await Prof.create({
-            firstname: firstname,
-            lastname: lastname,
-            phone: phone,
-            email: email,
-            title: title,
-        }).then(prof => {
-            res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
-            CreateUserAccount(firstname, lastname, prof.id)
-        }).catch(err =>{
-            console.error(err)
-            res.status(500).json({ message: err })
+        for(let i = 0; i<sheetNames.length; i++){
+            const arr = reader.utils.sheet_to_json(
+                file.Sheets[sheetNames[i]]
+            )
+
+            arr.forEach((res) => {
+                datas.push(res)
+            })
+        }
+        fs.unlinkSync(req.file.destination+'/'+req.file.filename)
+        await Prof.bulkCreate(datas,{ignoreDuplicates: true})
+        .then( prof => {
+            prof.forEach(p =>{
+                if(p.id != null){
+                    CreateUserAccount(p.firstname, p.lastname, p.id)
+                }
+            })
+            res.status(201).json({message: 'Data Uploaded', data:prof})
         })
-         
-           
-        
-    }).catch(err => res.status(500).json({ message: err }))
+        .catch( err => res.status(500).json({message: err}) )
+    }catch(err){
+        res.status(500).json({message: err})
+    }
 }
 
 const FindProf = async (req, res) => {
@@ -67,6 +76,8 @@ const FindProfById = async (req, res) => {
     })
 }
 
+
+
 const UpdateProf = async (req, res) => {
     let { id } = req.params
     await Prof.update(req.body, {
@@ -98,7 +109,7 @@ const DeleteProf = async (req, res) => {
 
 
 module.exports = {
-    CreateProf,
+    InitCreateProf,
     FindProf,
     FindProfById,
     UpdateProf,
