@@ -49,8 +49,8 @@ const FindProf = async (req, res) => {
 }
 
 const FindProfById = async (req, res) => {
-    let { id } = req.params
-    await Prof.findByPk(id, {
+    let { id } = req.params.id
+    const prof = await Prof.findByPk(id, {
         include: [{
             model: Matiere
         },
@@ -60,7 +60,7 @@ const FindProfById = async (req, res) => {
         {
             model: UserAccount
         }]
-    }).then(prof => prof ? res.status(200).json({ data: prof, message: 'Prof found' }) : res.status(404).json({ message: 'prof not found' })
+    }).then(prof => prof ? res.status(200).json(prof) : res.status(404).json({ message: 'prof not found' })
     ).catch(err => {
         console.error(err)
         res.status(500).json({ message: err })

@@ -31,7 +31,7 @@ const getOneSeance = asyncHandler(async (req, res) => {
         })
     }
 
-    res.status(200).json(Seance)
+    res.status(200).json(seance)
 
 })
 
