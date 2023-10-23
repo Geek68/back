@@ -83,7 +83,6 @@ const postStudent = asyncHandler(async (req, res) => {
                     level, 
                     birth_place, 
                     birth_date,
-                    profile_pic: req.file.path
                 },{ where : {
                     student_code : req.params.id
                 }
@@ -124,6 +123,26 @@ const postStudent = asyncHandler(async (req, res) => {
     
     })
 
+    const updateStudentPic = async (req, res) => {
+        let { id } = req.params
+        const fetchedStudent = await Student.findByPk(id)
+        
+        await Student.update({
+            profil_pic: req.file.path,
+        }, {
+            where: { id: id }
+        })
+        .then(_ => {
+            if(fs.existsSync(fetchedStudent.profil_pic)){        
+                fs.unlinkSync(fetchedStudent.profil_pic)
+            }
+            Student.findByPk(id).then(student => res.status(200).json({ data: student, message: 'Student updated' }))
+        })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ message: err })
+        })
+    }
 
 module.exports = {
     getAllStudents,
@@ -131,5 +150,6 @@ module.exports = {
     postStudent,
     updateStudent,
     deleteStudent,
-    getPromotion
+    getPromotion,
+    updateStudentPic
 }

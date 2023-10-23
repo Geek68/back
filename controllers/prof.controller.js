@@ -91,9 +91,26 @@ const UpdateProf = async (req, res) => {
         firstname, 
         lastname, 
         title, 
-        profil_pic_path: req.file.path,
         email, 
         phone
+    }, {
+        where: { id: id }
+    })
+    .then(_ => {
+        Prof.findByPk(id).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
+    })
+    .catch(err => {
+        console.error(err)
+        res.status(500).json({ message: err })
+    })
+}
+
+const UpadteProfPic = async (req, res) => {
+    let { id } = req.params
+    const fetchedProf = await Prof.findByPk(id)
+    
+    await Prof.update({
+        profil_pic_path: req.file.path,
     }, {
         where: { id: id }
     })
@@ -131,5 +148,5 @@ module.exports = {
     FindProfById,
     UpdateProf,
     DeleteProf,
-
+    UpadteProfPic
 }
