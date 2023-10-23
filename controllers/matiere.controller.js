@@ -1,12 +1,20 @@
 const db = require('../models')
-const {Matiere} = db
+const {Matiere,Niveau,Prof} = db
 const asyncHandler = require('express-async-handler')
 
 
 
 const getAllMatiere = asyncHandler(async (req, res) => {
 
-    const matieres = await Matiere.findAll()
+    const matieres = await Matiere.findAll({
+        include: [{
+            model: Prof
+        },
+        {
+            model: Niveau
+        }
+       ]
+    })
 
     res.status(200).json(matieres)
 }
@@ -14,7 +22,15 @@ const getAllMatiere = asyncHandler(async (req, res) => {
 
 
 const getOneMatiere = asyncHandler(async (req, res) => {
-    const matiere = await Matiere.findByPk(req.params.id)
+    const matiere = await Matiere.findByPk(req.params.id,{
+        include: [{
+            model: Niveau
+        },
+        {
+            model: Prof
+        }]
+    })
+
     if (!matiere) {
         res.status(400).json({
             message: 'Matiere non existant'
@@ -27,7 +43,7 @@ const getOneMatiere = asyncHandler(async (req, res) => {
 
 
 const postMatiere = asyncHandler(async (req, res) => {
-    const { designation, profId  } = req.body
+    const { designation, profId, niveauId  } = req.body
 
     const fetchedMatiere = await Matiere.findOne({ where: {designation : designation}
 })
@@ -37,7 +53,8 @@ const postMatiere = asyncHandler(async (req, res) => {
     } else {
         const matiere = await Matiere.create({
            designation,
-           profId
+           profId,
+           niveauId
         })
 
         res.status(200).json({
