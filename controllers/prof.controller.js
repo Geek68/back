@@ -58,7 +58,7 @@ const FindProf = async (req, res) => {
 }
 
 const FindProfById = async (req, res) => {
-    let { id } = req.params.id
+    let { id } = req.params
     const prof = await Prof.findByPk(id, {
         include: [{
             model: Matiere
