@@ -27,7 +27,7 @@ const getOneMatiere = asyncHandler(async (req, res) => {
 
 
 const postMatiere = asyncHandler(async (req, res) => {
-    const { designation } = req.body
+    const { designation, profId  } = req.body
 
     const fetchedMatiere = await Matiere.findOne({ where: {designation : designation}
 })
@@ -36,7 +36,8 @@ const postMatiere = asyncHandler(async (req, res) => {
         res.status(400).json({message: "Matiere déja existant"})
     } else {
         const matiere = await Matiere.create({
-           designation
+           designation,
+           profId
         })
 
         res.status(200).json({
@@ -47,7 +48,7 @@ const postMatiere = asyncHandler(async (req, res) => {
 })
 
     const updateMatiere = asyncHandler(async (req, res) => {
-        const { designation } = req.body
+        const { designation, profId } = req.body
         const fetchedMatiere = await Matiere.findByPk(req.params.id)
         
         if (!fetchedMatiere) {
@@ -55,7 +56,8 @@ const postMatiere = asyncHandler(async (req, res) => {
         }
         
                 await Matiere.update({
-                   designation
+                   designation,
+                   profId
                 },{ where : {
                     code_matiere : req.params.id
                 }
