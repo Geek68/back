@@ -105,7 +105,7 @@ const UpdateProf = async (req, res) => {
     })
 }
 
-const UpadteProfProfPic = async (req, res) => {
+const UpadteProfPic = async (req, res) => {
     let { id } = req.params
     const fetchedProf = await Prof.findByPk(id)
     
@@ -148,5 +148,5 @@ module.exports = {
     FindProfById,
     UpdateProf,
     DeleteProf,
-    UpadteProfProfPic
+    UpadteProfPic
 }
