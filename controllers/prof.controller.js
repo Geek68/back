@@ -1,5 +1,6 @@
 const { CreateUserAccount, DeleteUserAccount } = require('../controllers/userAccount.controller');
-const fs = require('fs');
+const fs = require('fs')
+const { Op } = require('sequelize')
 const reader = require ('xlsx')
 
 const db = require('../models')
@@ -57,6 +58,41 @@ const FindProf = async (req, res) => {
     .catch(err => res.status(500).json({message: err}))
 }
 
+
+const CreateProf = async (req, res) => {
+    const { firstname, lastname, title, email, phone } = req.body
+    
+    await Prof.findOne({
+        where:{[Op.or]: [{phone}, {email}]}
+    })
+    .then(async _p => {
+        if(_p){
+            res.status(400).json({message : 'This Prof already exist'})
+            fs.unlinkSync(req.file.path)
+        }else{
+            await Prof.create({
+                firstname: firstname,
+                lastname: lastname,
+                phone: phone,
+                title: title,
+                email: email,
+                profil_pic_path: req.file.path
+            }).then(prof => {
+                res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
+                CreateUserAccount(prof.firstname, prof.lastname, prof.id)
+            }).catch(err =>{
+                console.error(err)
+                res.status(500).json({message: err})
+            })
+        
+        }
+    }).catch(err => {
+        fs.unlinkSync(req.file.path)
+        res.status(500).json({message: err})
+    })
+
+}
+
 const FindProfById = async (req, res) => {
     let { id } = req.params
     const prof = await Prof.findByPk(id, {
@@ -75,8 +111,6 @@ const FindProfById = async (req, res) => {
         res.status(500).json({ message: err })
     })
 }
-
-
 
 const UpdateProf = async (req, res) => {
     let { id } = req.params
@@ -128,15 +162,23 @@ const UpadteProfPic = async (req, res) => {
 
 const DeleteProf = async (req, res) => {
     let { id } = req.params
-    const prof = await Prof.findByPk(id,{
+    const fetchedProf = await Prof.findByPk(id,{
         include: UserAccount
     })
-    await Prof.destroy({
-        where : {id : id}
-    }).then(response => {
-        res.status(200).json({message: 'Prof deleted'})
-        DeleteUserAccount(prof.UserAccount.id)
-    })
+    if(!fetchedProf){
+        res.status(400).json({message : "this Prof does not exist" });
+    }
+    else{
+        await Prof.destroy({
+            where : {id : id}
+        }).then(_ => {
+            if(fs.existsSync(fetchedProf.profil_pic_path)){        
+                fs.unlinkSync(fetchedProf.profil_pic_path)
+            }
+            DeleteUserAccount(fetchedProf.UserAccount.id)
+            res.status(200).json({message: 'Prof deleted'})
+        })
+    }
 }
 
 
@@ -144,6 +186,7 @@ const DeleteProf = async (req, res) => {
 
 module.exports = {
     InitCreateProf,
+    CreateProf,
     FindProf,
     FindProfById,
     UpdateProf,
