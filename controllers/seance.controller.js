@@ -15,7 +15,10 @@ const getAllSeance = asyncHandler(async (req, res) => {
             include: {
                 model: Student
             }
-        }]
+        },
+    {
+        model: Prof
+    }]
     })
 
     res.status(200).json(seances)
@@ -37,7 +40,7 @@ const getOneSeance = asyncHandler(async (req, res) => {
 
 
 const postSeance = asyncHandler(async (req, res) => {
-    const { designation } = req.body
+    const { designation, salleId, matiereId, profId } = req.body
     const date = new Date()
 
     const fetchedSeance = await Seance.findOne({
@@ -49,6 +52,9 @@ const postSeance = asyncHandler(async (req, res) => {
     } else {
         const seance = await Seance.create({
             designation,
+            salleId,
+            matiereId,
+            profId,
             date_seance: date
         })
 
