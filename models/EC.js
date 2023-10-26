@@ -1,15 +1,15 @@
 module.exports = (sequelize, DataTypes) =>{
-    const Seance = sequelize.define('Seances', {
-        code_seance: {
+    const EC = sequelize.define('EC', {
+        code_element: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
           },
-        date_seance :{
-            type: DataTypes.DATEONLY,
-            allowNull: false
+        nom_element:{
+            type: DataTypes.STRING,
+            allowNull : false,
         }
     })
-    return Seance
+    return EC
   
   }

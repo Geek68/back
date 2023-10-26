@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db.config');
-const { getAllStudents, getOneStudent, postStudent, updateStudent, deleteStudent, getPromotion, updateStudentPic } = require('../controllers/student.controller');
+const { getAllStudents, getOneStudent, postStudent, updateStudent, deleteStudent, getPromotion, updateStudentPic } = require('../controllers/etudiant.controller');
 const { upload } = require('../middlewares/uploadImgMiddleware');
 
 

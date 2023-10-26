@@ -23,20 +23,20 @@ app.use((req, res, next) => {
 app.use(express.static("./public"));
 const db = require('./models')
 
-db.sequelize.sync({force: false, alter:true}).then(()=>{
-  handleStart();
+db.sequelize.sync({force: true, alter:true}).then(()=>{
+  console.log('Db synced')
+  // handleStart();
 });
 
 //routes
 app.use("/api/login", require("./routes/auth.routes"));
 app.use("/api/user", require("./routes/user.routes"));
-app.use("/api/student", require("./routes/student.routes"));
+app.use("/api/student", require("./routes/etudiant.routes"));
 app.use("/api/prof", require("./routes/prof.routes"));
-app.use("/api/parcours", require("./routes/parcours.routes"));
 app.use("/api/salle", require("./routes/salle.routes"));
-app.use("/api/seance", require("./routes/seance.routes"));
-app.use("/api/niveau", require("./routes/level.routes"));
-app.use("/api/matiere", require("./routes/matiere.routes"));
+app.use("/api/seance", require("./routes/tranchehoraire.routes"));
+app.use("/api/niveau", require("./routes/niveau.routes"));
+app.use("/api/matiere", require("./routes/ec.routes"));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

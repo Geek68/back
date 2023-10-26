@@ -1,15 +1,17 @@
 module.exports = (sequelize, DataTypes) =>{
-    const Matiere = sequelize.define('Matieres', {
-        code_matiere: {
+    const TypeTrancheHoraire = sequelize.define('TypeTrancheHoraires', {
+        id_typetranchehoraire: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
           },
-        designation:{
+
+        typetranchehoraire_libelle :{
             type: DataTypes.STRING,
-            allowNull : false,
+            allowNull: false
         }
+
     })
-    return Matiere
+    return TypeTrancheHoraire
   
   }

@@ -1,5 +1,5 @@
 const db = require('../models')
-const {Student} = db
+const {Etudiant, Personne} = db
 const asyncHandler = require('express-async-handler')
 const { Op } = require('sequelize')
 const fs = require('fs')
@@ -10,7 +10,7 @@ const fs = require('fs')
 //@acces Private
 const getAllStudents = asyncHandler(async (req, res) => {
 
-    const students = await Student.findAll()
+    const etudiants = await Etudiant.findAll()
 
     res.status(200).json(students)
 }
@@ -20,14 +20,18 @@ const getAllStudents = asyncHandler(async (req, res) => {
 //@route GET /api/students/:id
 //@acces Private
 const getOneStudent = asyncHandler(async (req, res) => {
-    const student = await Student.findByPk(req.params.id)
-    if (!student) {
+    const etudiant = await Etudiant.findByPk(req.params.id,{
+        include: {
+            model: Personne
+        }
+    })
+    if (!etudiant) {
         res.status(400).json({
             message: 'Etudiant non existant'
         })
     }
 
-    res.status(200).json(student)
+    res.status(200).json(etudiant)
 
 })
 

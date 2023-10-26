@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db.config');
-const { getAllMatiere, getOneMatiere, postMatiere, updateMatiere, deleteMatiere } = require('../controllers/matiere.controller');
+const { getAllMatiere, getOneMatiere, postMatiere, updateMatiere, deleteMatiere } = require('../controllers/ec.controller');
 
 
 router.route('/').get(getAllMatiere).post(postMatiere)

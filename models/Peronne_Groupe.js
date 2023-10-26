@@ -21,26 +21,27 @@ const sequelize = new Sequelize(
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.Student = require('./Etudiant')(sequelize, DataTypes)
-db.Seance = require('./TrancheHoraire')(sequelize, DataTypes)
+db.Groupe = require('./Groupe')(sequelize, DataTypes)
+db.Personne = require('./Personne')(sequelize, DataTypes)
 
 module.exports = (sequelize, DataTypes) =>{
-    const Absence = sequelize.define('Absences', {
-        tranchehoraireId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: db.TrancheHoraire, 
-                key: 'code_tranchehoraire'
-              }
-          },
-        personneId :{
+    const Personne_Groupe = sequelize.define('Personne-Groupes', {
+        personneId: {
             type: DataTypes.INTEGER,
             references: {
                 model: db.Personne, 
                 key: 'id_personne'
               }
-        }
+          },
+
+          groupeId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: db.Groupe, 
+                key: 'id_groupe'
+              }
+          }
     })
-    return Absence
+    return Personne_Groupe
   
   }

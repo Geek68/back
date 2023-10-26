@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db.config');
-const { getAllSeance, getOneSeance, postSeance, updateSeance, deleteSeance } = require('../controllers/seance.controller');
+const { getAllSeance, getOneSeance, postSeance, updateSeance, deleteSeance } = require('../controllers/tranchehoraire.controller');
 
 
 router.route('/').get(getAllSeance).post( postSeance)

@@ -1,15 +1,16 @@
 module.exports = (sequelize, DataTypes) =>{
-    const Parcours = sequelize.define('Parcours', {
-        code_parcours : {
+    const Niveau = sequelize.define('Niveaux', {
+        code_niveau: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
           },
-        designation:{
+        niveau_libelle:{
             type: DataTypes.STRING,
             allowNull : false,
-        }
+        },
+        
     })
-    return Parcours
+    return Niveau
   
   }

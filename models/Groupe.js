@@ -1,16 +1,15 @@
 module.exports = (sequelize, DataTypes) =>{
-    const Niveau = sequelize.define('Levels', {
-        code_niveau: {
+    const Groupe = sequelize.define('Groupes', {
+        id_groupe: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
           },
-        designation:{
+        nom_groupe:{
             type: DataTypes.STRING,
             allowNull : false,
-        },
-        
+        }
     })
-    return Niveau
+    return Groupe
   
   }

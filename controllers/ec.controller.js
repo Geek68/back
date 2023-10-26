@@ -1,5 +1,5 @@
 const db = require('../models')
-const {Matiere,Niveau,Prof} = db
+const {EC,Niveau,Prof, Personne} = db
 const asyncHandler = require('express-async-handler')
 
 

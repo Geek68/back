@@ -5,10 +5,18 @@ module.exports = (sequelize, DataTypes) =>{
             primaryKey: true,
             autoIncrement: true,
           },
-        designation:{
+        numero_salle:{
             type: DataTypes.STRING,
             allowNull : false,
-        }
+        },
+        localisation:{
+          type: DataTypes.STRING,
+          allowNull : false,
+      },
+      capacite_salle:{
+        type: DataTypes.INTEGER,
+    },
+        
     })
     return Salle
   
