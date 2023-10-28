@@ -98,7 +98,7 @@ const CreateProf = async (req, res) => {
             include: {
                 model: Prof
             },
-            where: { [Op.or]: [{ telephone }, { email }] }
+            where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
         })
         .then(async _p => {
             if(_p){
@@ -112,7 +112,7 @@ const CreateProf = async (req, res) => {
                         Personne : {
                             nom,
                             prenoms,
-                            telephone,
+                            telephone : `+${telephone}`,
                             email,
 
                         }   
@@ -169,11 +169,10 @@ const UpdateProf = async (req, res) => {
     await Prof.update({
         titre,
         fonction,
-        photo_prof : req.file.path,
         Personne : {
             nom,
             prenoms,
-            telephone,
+            telephone : `+${telephone}`,
             email,
                         }   
     },{
@@ -199,13 +198,13 @@ const UpadteProfPic = async (req, res) => {
     const fetchedProf = await Prof.findByPk(id)
     
     await Prof.update({
-        profil_pic_path: req.file.path,
+        photo_prof: req.file.path,
     }, {
-        where: { id: id }
+        where: { code_prof: id }
     })
     .then(_ => {
-        if(fs.existsSync(fetchedProf.profil_pic_path)){        
-            fs.unlinkSync(fetchedProf.profil_pic_path)
+        if(fs.existsSync(fetchedProf.photo_prof)){        
+            fs.unlinkSync(fetchedProf.photo_prof)
         }
         Prof.findByPk(id).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
     })

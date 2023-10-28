@@ -67,17 +67,17 @@ const handleStart = async () => {
     }
 
 
-    const all_annee = await db.AnneeUniversitaire.findAll()
-    if(all_annee.length === 0 ){
-      await db.AnneeUniversitaire.bulkCreate([
-        {annee_debut : '2018', annee_fin: '2019',},
+    // const all_annee = await db.AnneeUniversitaire.findAll()
+    // if(all_annee.length === 0 ){
+    //   await db.AnneeUniversitaire.bulkCreate([
+    //     {annee_debut : '2018', annee_fin: '2019',},
      
-      ]).then(()=>{
-        console.log('Années ajoutées avec succès')
-     }).catch(err => {
-        console.log(err.parent.detail)
-     })
-    }
+    //   ]).then(()=>{
+    //     console.log('Années ajoutées avec succès')
+    //  }).catch(err => {
+    //     console.log(err.parent.detail)
+    //  })
+    // }
 
 
     const typetranches = await db.TypeTrancheHoraire.findAll()

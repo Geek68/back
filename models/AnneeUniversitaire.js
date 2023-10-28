@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) =>{
             autoIncrement: true,
           },
         annee_debut:{
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull : false,
         },
         annee_fin:{
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull : false,
         },
         
