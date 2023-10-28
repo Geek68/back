@@ -92,7 +92,7 @@ const FindProf = async (req, res) => {
 
 const CreateProf = async (req, res) => {
     const { nom, prenoms, 
-        telephone, email, sexe, adresse, titre, fonction } = req.body
+        telephone, email, titre, fonction } = req.body
         
         await Personne.findOne({
             include: {
@@ -158,8 +158,8 @@ const FindProfById = async (req, res) => {
 
 const UpdateProf = async (req, res) => {
     let { id } = req.params
-    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
-        telephone, email, sexe, situation_matrimoniale, adresse, titre } = req.body    
+    const { nom, prenoms, 
+        telephone, email, titre, fonction } = req.body  
         const fetchedProf = await Prof.findByPk(id)
 
     if (!fetchedProf) {
@@ -225,7 +225,7 @@ const DeleteProf = async (req, res) => {
     }
     else{
         await Prof.destroy({
-            where : {id : id}
+            where : {code_prof : id}
         }).then(_ => {
             if(fs.existsSync(fetchedProf.profil_pic_path)){        
                 fs.unlinkSync(fetchedProf.profil_pic_path)

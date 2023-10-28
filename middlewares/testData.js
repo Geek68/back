@@ -44,6 +44,29 @@ const handleStart = async () => {
      })
     }
 
+    const all_semestres = await db.Semestre.findAll()
+    if(all_semestres.length === 0 ){
+      await db.Semestre.bulkCreate([
+        {semestre_libelle : 'S1'},
+        {semestre_libelle : 'S2'},
+        {semestre_libelle : 'S3'},
+        {semestre_libelle : 'S4'},
+        {semestre_libelle : 'S5'},
+        {semestre_libelle : 'S6'},
+        {semestre_libelle : 'S7'},
+        {semestre_libelle : 'S8'},
+        {semestre_libelle : 'S9'},
+        {semestre_libelle : 'S10'},
+
+       
+      ]).then(()=>{
+        console.log('Semestres ajoutées avec succès')
+     }).catch(err => {
+        console.log(err.parent.detail)
+     })
+    }
+
+
     const all_annee = await db.AnneeUniversitaire.findAll()
     if(all_annee.length === 0 ){
       await db.AnneeUniversitaire.bulkCreate([

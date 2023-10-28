@@ -75,11 +75,15 @@ db.Absence.belongsTo(db.Personne, {
     foreignKey: 'personneId', targetKey: 'id_personne'
 })
 
-db.Etudiant.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'etudiantId'})
-db.Niveau.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'niveauId'})
-db.Etudiant.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'etudiantId'})
-db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
 
+db.Etudiant.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'etudiantId'})
+db.Etudiant.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'etudiantId'})
+
+db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
+db.AnneeUniversitaire.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
+
+db.Niveau.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'niveauId'})
+db.Niveau.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'niveauId'})
 
 
 
@@ -202,6 +206,17 @@ db.Personne_Groupe.belongsTo(db.Groupe, {
 db.AnneeUniversitaire.belongsToMany(db.Semestre, {through: db.AnneeUniversitaire_Semestre, foreignKey: 'anneeUniversitaireId'})
 db.Semestre.belongsToMany(db.AnneeUniversitaire, {through: db.AnneeUniversitaire_Semestre, foreignKey: 'semestreId'})
 
-
+db.AnneeUniversitaire.hasMany(db.AnneeUniversitaire_Semestre,{
+    foreignKey : 'anneeUniversitaireId', targetKey : 'id_anneeUniversitaire'
+})
+db.AnneeUniversitaire_Semestre.belongsTo(db.AnneeUniversitaire, {
+    foreignKey: 'anneeUniversitaireId', targetKey: 'id_anneeUniversitaire'
+})
+db.Semestre.hasMany(db.AnneeUniversitaire_Semestre,{
+    foreignKey : 'semestreId', targetKey : 'id_semestre'
+})
+db.AnneeUniversitaire_Semestre.belongsTo(db.Semestre, {
+    foreignKey: 'semestreId', targetKey: 'id_semestre'
+})
 
 module.exports = db

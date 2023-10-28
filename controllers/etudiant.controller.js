@@ -80,11 +80,11 @@ const postEtudiant = asyncHandler(async (req, res) => {
     const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
         telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
 
-    await Personne.findOne({
+    await Inscrit.findOne({
         include: {
             model: Etudiant 
         },
-        where: { [Op.or]: [{ telephone }, { cin }, { email }] }
+        where: { [Op.and]: [{ anneeUniversitaireId }, { niveauId }, { Etudiant }] }
     })
         .then(async _p => {
             console.log(_p)
@@ -102,13 +102,13 @@ const postEtudiant = asyncHandler(async (req, res) => {
                             date_delivranceCIN,
                             lieu_delivranceCIN,
                             situation_matrimoniale,
+                            sexe,
+                            adresse,
                         Personne: {
                             nom,
                             prenoms, 
                             telephone,
                             email,
-                            sexe,
-                            adresse
                         }
                     },
 
