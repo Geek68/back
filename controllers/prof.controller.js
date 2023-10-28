@@ -85,8 +85,7 @@ const CreateProf = async (req, res) => {
                             prenoms,
                             telephone,
                             email,
-                            sexe,
-                            adresse
+
                         }   
                 
                 },{
@@ -139,21 +138,14 @@ const UpdateProf = async (req, res) => {
     }
         
     await Prof.update({
-                        titre,
-                        // photo_prof : req.file.path,
-                        Personne : {
-                            nom,
-                            prenoms,
-                            date_naissance,
-                            lieu_naissance,
-                            cin,
-                            date_delivranceCIN,
-                            lieu_delivranceCIN,
-                            telephone,
-                            email,
-                            sexe,
-                            situation_matrimoniale,
-                            adresse
+        titre,
+        fonction,
+        photo_prof : req.file.path,
+        Personne : {
+            nom,
+            prenoms,
+            telephone,
+            email,
                         }   
     },{
         where: { code_prof: id }

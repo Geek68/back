@@ -15,15 +15,7 @@ module.exports = (sequelize, DataTypes) =>{
           type: DataTypes.STRING,
           allowNull: true,
         },
-
-        
-
-          sexe: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-
-          
+ 
           email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,10 +28,6 @@ module.exports = (sequelize, DataTypes) =>{
             unique: true
           },
 
-          adresse: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
     });
   
     return Personne

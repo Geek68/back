@@ -43,7 +43,15 @@ module.exports = (sequelize, DataTypes) =>{
         type: DataTypes.STRING,
         allowNull: false,
       },
-
+      sexe: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      
+      adresse: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       
   });
 
