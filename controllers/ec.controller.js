@@ -29,7 +29,7 @@ const getAllEC = asyncHandler(async (req, res) => {
 
 
 const getOneEC = asyncHandler(async (req, res) => {
-    const EC = await EC.findByPk(req.params.id,{
+    const ec = await EC.findByPk(req.params.id,{
         include: [
             {
                 model: Niveau
@@ -46,13 +46,13 @@ const getOneEC = asyncHandler(async (req, res) => {
            ]
     })
 
-    if (!EC) {
+    if (!ec) {
         res.status(400).json({
             message: 'EC non existant'
         })
     }
 
-    res.status(200).json(EC)
+    res.status(200).json(ec)
 
 })
 
@@ -60,20 +60,20 @@ const getOneEC = asyncHandler(async (req, res) => {
 const postEC = asyncHandler(async (req, res) => {
     const { nom_element, niveauId  } = req.body
 
-    const fetchedEC = await EC.findOne({ where: {nom_element : nom_element}
+    const fetchedEC = await EC.findOne({ where: {nom_element}
 })
 
     if (fetchedEC) {
         res.status(400).json({message: "EC déja existant"})
     } else {
-        const EC = await EC.create({
+        const ec = await EC.create({
             nom_element,
-           niveauId
+            niveauId
         })
 
         res.status(200).json({
             'message': "EC ajouté avec succès.",
-            'EC': EC
+            'EC': ec
         })
     }
 })
@@ -98,7 +98,7 @@ const postEC = asyncHandler(async (req, res) => {
                 }
                 ).then(() => {
                     
-                    res.status(200).send('EC modifiée')
+                    res.status(200).json(`Element constitutif ${req.params.id} modifié`)
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})
                 })   

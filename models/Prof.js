@@ -24,9 +24,7 @@ module.exports = (sequelize, DataTypes) =>{
     //         fields: ['firstname', 'lastname'] // you can use multiple columns as well here
     //     }]
     // },
-    {
-        timestamps: false
-    });
+    );
     return Prof
   
   }

@@ -46,11 +46,14 @@ const FindProf = async (req, res) => {
     await Prof.findAll({
         include: [
         {
-            model: TrancheHoraire
+            model: Personne
         },
         {
             model: UserAccount
-        }]
+        },
+    {
+        model: TrancheHoraire
+    }]
     })
     .then(profs => res.json({profs : profs}))
     .catch(err => res.status(500).json({message: err}))
@@ -65,29 +68,29 @@ const CreateProf = async (req, res) => {
             include: {
                 model: Prof
             },
-            where:{[Op.or]: [{telephone}, {email}, {cin}]}
+            where: { [Op.or]: [{ telephone }, { cin }, { email }] }
         })
         .then(async _p => {
             console.log(_p)
             if(_p){
-                res.status(400).json({message : 'Prof deja existant'})
-                // fs.unlinkSync(req.file.path)
+                res.status(400).json({message : 'Cette personne deja existant'})
+                fs.unlinkSync(req.file.path)
             }else{
                 await Prof.create({
                         titre,
-                        photo_prof : req.file.path,
+                        // photo_prof : req.file.path,
                         Personne : {
-                            nom, 
-                            prenoms, 
-                            date_naissance, 
-                            lieu_naissance, 
-                            cin, 
-                            date_delivranceCIN, 
+                            nom,
+                            prenoms,
+                            date_naissance,
+                            lieu_naissance,
+                            cin,
+                            date_delivranceCIN,
                             lieu_delivranceCIN,
-                            telephone, 
-                            email, 
-                            sexe, 
-                            situation_matrimoniale, 
+                            telephone,
+                            email,
+                            sexe,
+                            situation_matrimoniale,
                             adresse
                         }   
                 
@@ -98,13 +101,13 @@ const CreateProf = async (req, res) => {
                         CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)
                     
                 }).catch(err =>{
-                    console.error(err)
-                    res.status(500).json({message: err})
+                    console.error(err.parent.detail)
+                    res.status(500).json({message: err.parent.detail})
                 })
             
             }
         }).catch(err => {
-            // fs.unlinkSync(req.file.path)
+            fs.unlinkSync(req.file.path)
             res.status(500).json({message: err})
         })
 
@@ -114,11 +117,14 @@ const FindProfById = async (req, res) => {
     let { id } = req.params
     const prof = await Prof.findByPk(id, {
         include: [
+            {
+                model: Personne
+            },
+            {
+                model: UserAccount
+            },
         {
             model: TrancheHoraire
-        },
-        {
-            model: UserAccount
         }]
     }).then(prof => prof ? res.status(200).json(prof) : res.status(404).json({ message: 'prof not found' })
     ).catch(err => {
@@ -129,24 +135,42 @@ const FindProfById = async (req, res) => {
 
 const UpdateProf = async (req, res) => {
     let { id } = req.params
-    const { lastname, firstname, title, email, phone } = req.body
-    const fetchedProf = await Prof.findByPk(id)
+    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
+        telephone, email, sexe, situation_matrimoniale, adresse, titre } = req.body    
+        const fetchedProf = await Prof.findByPk(id)
 
     if (!fetchedProf) {
         res.status(400).json({message : 'this Prof does not exist'})
     }
         
     await Prof.update({
-        firstname, 
-        lastname, 
-        title, 
-        email, 
-        phone
-    }, {
-        where: { id: id }
-    })
+                        titre,
+                        // photo_prof : req.file.path,
+                        Personne : {
+                            nom,
+                            prenoms,
+                            date_naissance,
+                            lieu_naissance,
+                            cin,
+                            date_delivranceCIN,
+                            lieu_delivranceCIN,
+                            telephone,
+                            email,
+                            sexe,
+                            situation_matrimoniale,
+                            adresse
+                        }   
+    },{
+        where: { code_prof: id }
+    },{include : {
+        model: Personne
+    }})
     .then(_ => {
-        Prof.findByPk(id).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
+        Prof.findByPk(id,{
+            include : {
+                model: Personne
+            }
+        }).then(prof => res.status(200).json({ data: prof, message: 'Prof updated' }))
     })
     .catch(err => {
         console.error(err)

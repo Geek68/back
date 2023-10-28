@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull : false,
         },
-        localisation:{
+        localisation_salle:{
           type: DataTypes.STRING,
           allowNull : false,
       },

@@ -24,8 +24,7 @@ app.use(express.static("./public"));
 const db = require('./models')
 
 db.sequelize.sync({force: false, alter:true}).then(()=>{
-  console.log('Db synced')
-  // handleStart();
+  handleStart();
 });
 
 //routes

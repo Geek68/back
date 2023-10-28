@@ -1,5 +1,5 @@
 const db = require('../models')
-const {Niveau, Inscrit,Personne, AnneeUniversitaire, Etudiant} = db
+const {Niveau, Inscrit,Personne, AnneeUniversitaire, Etudiant,EC} = db
 const asyncHandler = require('express-async-handler')
 
 
@@ -16,6 +16,8 @@ const getAllNiveau = asyncHandler(async (req, res) => {
             },{
                 model : AnneeUniversitaire
             }]
+        },{
+            model: EC
         }]
     })
 
@@ -36,6 +38,8 @@ const getOneNiveau = asyncHandler(async (req, res) => {
             },{
                 model : AnneeUniversitaire
             }]
+        }, {
+            model: EC
         }]
     })
     if (!niveau) {

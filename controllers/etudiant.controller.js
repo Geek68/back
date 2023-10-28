@@ -1,5 +1,5 @@
 const db = require('../models')
-const { Etudiant, Personne, TrancheHoraire, Absence, Groupe, Niveau, Personne_Groupe } = db
+const { Etudiant, Personne, Inscrit, TrancheHoraire, Absence, Groupe, Niveau, Personne_Groupe, AnneeUniversitaire } = db
 const asyncHandler = require('express-async-handler')
 const { Op } = require('sequelize')
 const fs = require('fs')
@@ -11,9 +11,27 @@ const fs = require('fs')
 const getAllEtudiants = asyncHandler(async (req, res) => {
 
     const etudiants = await Etudiant.findAll({
-        include: {
-            model: Niveau
-        }
+        include: [
+            {
+                model: Personne,
+                include: {
+                    model: Groupe,
+                    include: {
+                        model: TrancheHoraire
+                    }
+                }
+            },
+
+            {
+                model: Inscrit,
+                include: [{
+                    model: Niveau
+                },
+                { model: AnneeUniversitaire }]
+            }
+
+
+        ]
     })
 
     res.status(200).json(etudiants)
@@ -25,9 +43,27 @@ const getAllEtudiants = asyncHandler(async (req, res) => {
 //@acces Private
 const getOneEtudiant = asyncHandler(async (req, res) => {
     const etudiant = await Etudiant.findByPk(req.params.id, {
-        include: {
-            model: Personne
-        }
+        include: [
+            {
+                model: Personne,
+                include: {
+                    model: Groupe,
+                    include: {
+                        model: TrancheHoraire
+                    }
+                }
+            },
+
+            {
+                model: Inscrit,
+                include: [{
+                    model: Niveau
+                },
+                { model: AnneeUniversitaire }]
+            }
+
+
+        ]
     })
     if (!etudiant) {
         res.status(400).json({
@@ -41,36 +77,68 @@ const getOneEtudiant = asyncHandler(async (req, res) => {
 
 
 const postEtudiant = asyncHandler(async (req, res) => {
-    const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
+    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
+        telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
 
-    const fetchedEtudiant = await Etudiant.findOne({
-        where: {
-            [Op.or]: [{ cin }, { phone }, { email }
-            ]
-        }
+    await Personne.findOne({
+        include: {
+            model: Etudiant 
+        },
+        where: { [Op.or]: [{ telephone }, { cin }, { email }] }
     })
+        .then(async _p => {
+            console.log(_p)
+            if (_p) {
+                res.status(400).json({ message: 'Etudiant deja existant' })
+                fs.unlinkSync(req.file.path)
+            } else {
+                await Inscrit.create({
+                    Etudiant: {
+                        nationalite,
+                        numero_passeport,
+                        Personne: {
+                            nom,
+                            prenoms,
+                            date_naissance,
+                            lieu_naissance,
+                            cin,
+                            date_delivranceCIN,
+                            lieu_delivranceCIN,
+                            telephone,
+                            email,
+                            sexe,
+                            situation_matrimoniale,
+                            adresse
+                        }
+                    },
 
-    if (fetchedEtudiant) {
-        res.status(400).json({ message: "Etudiant déja existant" })
-    } else {
-        const Etudiant = await Etudiant.create({
-            lastname,
-            firstname,
-            cin,
-            email,
-            phone,
-            course,
-            level,
-            birth_place,
-            birth_date,
-            profile_pic: req.file.path
-        })
+                    niveauId,
+                    anneeUniversitaireId,
+                    code_redoublement,
+                    // photo_etudiant : req.file.path
 
-        res.status(200).json({
-            'message': "Etudiant ajouté avec succès.",
-            'Etudiant': Etudiant
+                }, {
+                    include: [{
+                        model: Etudiant,
+                        include: { model: Personne }
+                    }]
+                }).then(inscrit => {
+
+
+                    console.log(inscrit)
+                    res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
+
+
+                }).catch(err => {
+                    console.error(err)
+                    res.status(500).json({ message: err.parent.detail })
+                })
+
+            }
+        }).catch(err => {
+            fs.unlinkSync(req.file.path)
+            res.status(500).json({ message: err })
         })
-    }
 })
 
 //@desc update a Etudiant

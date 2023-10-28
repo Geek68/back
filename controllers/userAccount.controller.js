@@ -3,7 +3,7 @@ const db = require('../models')
 const nodemailer = require('nodemailer');
 
 
-const {UserAccount, Prof} = db
+const {UserAccount, Prof, Personne} = db
 
 const CreateUserAccount = async(firstname, lastname, profId) => {
     console.log(firstname, lastname, profId)
@@ -15,7 +15,7 @@ const CreateUserAccount = async(firstname, lastname, profId) => {
         login,
         password: bcrypt.hashSync(passw, 8),
         profId: profId,
-    }).then(UserAccount => {
+    }).then(async UserAccount => {
         console.log("Account Created")
 
         let config = {
@@ -28,10 +28,17 @@ const CreateUserAccount = async(firstname, lastname, profId) => {
             }
         }
         let transporter = nodemailer.createTransport(config);
-        
+        const prof = await Prof.findByPk(profId, {
+            include: [
+            {
+                model: Personne
+            },
+           ]
+        })
+
         let message = {
             from: 'kokorikogasy@gmail.com', // sender address
-            to: `${profemail.email}` , // list of receivers
+            to: `${prof.Personne.email}` , // list of receivers
             subject: 'Your login and password', // Subject line
             text: `Your password : ${UserAccount.password} and login : ${UserAccount.login}`, // html body
             

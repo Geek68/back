@@ -79,8 +79,31 @@ db.Etudiant.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'etudiant
 db.Niveau.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'niveauId'})
 db.Etudiant.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'etudiantId'})
 db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
-db.Niveau.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'niveauId'})
-db.AnneeUniversitaire.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
+
+
+
+
+db.Etudiant.hasMany(db.Inscrit,{
+    foreignKey: 'etudiantId', targetKey: 'numero_inscription'
+})
+db.Inscrit.belongsTo(db.Etudiant, {
+    foreignKey: 'etudiantId', targetKey: 'numero_inscription'
+})
+db.Niveau.hasMany(db.Inscrit,{
+    foreignKey: 'niveauId', targetKey: 'code_niveau'
+})
+db.Inscrit.belongsTo(db.Niveau, {
+    foreignKey: 'niveauId', targetKey: 'code_niveau'
+})
+
+db.AnneeUniversitaire.hasMany(db.Inscrit,{
+    foreignKey: 'anneeUniversitaireId', targetKey: 'id_anneeUniversitaire'
+})
+db.Inscrit.belongsTo(db.AnneeUniversitaire, {
+    foreignKey: 'anneeUniversitaireId', targetKey: 'id_anneeUniversitaire'
+})
+
+
 
 db.Salle.hasMany(db.TrancheHoraire,{
     foreignKey: 'salleId', targetKey: 'code_salle'
@@ -133,13 +156,6 @@ db.TrancheHoraire.belongsTo(db.Prof,{
 
 
 
-db.Niveau.hasMany(db.Etudiant,{
-    foreignKey: 'niveauId', targetKey: 'code_niveau'
-})
-
-db.Etudiant.belongsTo(db.Niveau,{
-    foreignKey: 'niveauId', targetKey: 'code_niveau'
-})
 
 db.Personne.hasMany(db.Etudiant,{
     foreignKey: 'personneId', targetKey: 'id_personne'
