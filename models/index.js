@@ -162,20 +162,20 @@ db.TrancheHoraire.belongsTo(db.Prof,{
 
 
 db.Personne.hasMany(db.Etudiant,{
-    foreignKey: 'personneId', targetKey: 'id_personne'
+    foreignKey: 'personneId', targetKey: 'id_personne', onDelete: 'CASCADE',
 })
 
 db.Etudiant.belongsTo(db.Personne,{
-    foreignKey: 'personneId', targetKey: 'id_personne'
+    foreignKey: 'personneId', targetKey: 'id_personne' , onDelete: 'CASCADE'
 })
 
 
 db.Personne.hasMany(db.Prof,{
-    foreignKey: 'personneId', targetKey: 'id_personne'
+    foreignKey: 'personneId', targetKey: 'id_personne' , onDelete: 'CASCADE'
 })
 
 db.Prof.belongsTo(db.Personne,{
-    foreignKey: 'personneId', targetKey: 'id_personne'
+    foreignKey: 'personneId', targetKey: 'id_personne' , onDelete: 'CASCADE'
 })
 
 db.Groupe.hasMany(db.TrancheHoraire,{

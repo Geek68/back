@@ -217,7 +217,7 @@ const UpadteProfPic = async (req, res) => {
 const DeleteProf = async (req, res) => {
     let { id } = req.params
     const fetchedProf = await Prof.findByPk(id,{
-        include: UserAccount
+        include: [{ model : UserAccount},{model: Personne}]
     })
     if(!fetchedProf){
         res.status(400).json({message : "this Prof does not exist" });
@@ -225,9 +225,12 @@ const DeleteProf = async (req, res) => {
     else{
         await Prof.destroy({
             where : {code_prof : id}
-        }).then(_ => {
-            if(fs.existsSync(fetchedProf.profil_pic_path)){        
-                fs.unlinkSync(fetchedProf.profil_pic_path)
+        }).then(async _ => {
+            await Personne.destroy({
+                where : {id_personne : fetchedProf.Personne.id_personne}
+            })
+            if(fs.existsSync(fetchedProf.photo_prof)){        
+                fs.unlinkSync(fetchedProf.photo_prof)
             }
             DeleteUserAccount(fetchedProf.UserAccount.id)
             res.status(200).json({message: 'Prof deleted'})
