@@ -17,6 +17,7 @@ const InitCreateProf = async (req, res) => {
         if(sheetNames.length == 0){
             res.status(200).json({message: 'Aucun nouveau élèment disponible'})
         }
+
         for(let i = 0; i<sheetNames.length; i++){
             const arr = reader.utils.sheet_to_json(
                 file.Sheets[sheetNames[i]]
@@ -27,19 +28,48 @@ const InitCreateProf = async (req, res) => {
             })
         }
         fs.unlinkSync(req.file.destination+'/'+req.file.filename)
-        await Prof.bulkCreate(datas,{ignoreDuplicates: true})
-        .then( prof => {
-            prof.forEach(p =>{
-                if(p.id != null){
-                    CreateUserAccount(p.firstname, p.lastname, p.id)
-                }
-            })
-            res.status(201).json({message: 'Data Uploaded', data:prof})
-        })
-        .catch( err => res.status(500).json({message: err}) )
+
+        try{
+            bulkCreateProf(datas)
+            res.status(201).json({message: 'Data Uploaded'})
+        }catch(err){
+            res.status(500).json({message: "An error occured"})
+        }
     }catch(err){
         res.status(500).json({message: err})
     }
+}
+
+const bulkCreateProf = (datas)=>{
+    datas.forEach(async data => {
+        const {photo_prof, nom, prenoms, titre, fonction, email, telephone} = data
+        await Personne.findOne({
+            include: {
+                model: Prof
+            },
+            where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
+        }).then(async _p => {
+            if(_p){
+                return
+            }else{
+                await Prof.create({
+                        titre : titre,
+                        fonction : fonction,
+                        photo_prof : photo_prof,
+                        Personne : {
+                            nom : nom,
+                            prenoms : prenoms,
+                            telephone : `+${telephone}`,
+                            email : email,
+                        }                       
+                },{
+                    include: Personne
+                }).then(prof => {
+                    CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)                      
+                })
+            }
+        })
+    })
 }
 
 const FindProf = async (req, res) => {
@@ -71,7 +101,6 @@ const CreateProf = async (req, res) => {
             where: { [Op.or]: [{ telephone }, { email }] }
         })
         .then(async _p => {
-            console.log(_p)
             if(_p){
                 res.status(400).json({message : 'Cette personne deja existant'})
                 fs.unlinkSync(req.file.path)
