@@ -10,6 +10,12 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull: true,
         },
+
+        photo_prof:{
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+      
       
     },
     // {

@@ -1,26 +1,30 @@
 const db = require('../models')
-const {Etudiant, Personne} = db
+const { Etudiant, Personne, TrancheHoraire, Absence, Groupe, Niveau, Personne_Groupe } = db
 const asyncHandler = require('express-async-handler')
 const { Op } = require('sequelize')
 const fs = require('fs')
 
 
-//@desc get all students
-//@route GET /api/students
+//@desc get all Etudiants
+//@route GET /api/Etudiants
 //@acces Private
-const getAllStudents = asyncHandler(async (req, res) => {
+const getAllEtudiants = asyncHandler(async (req, res) => {
 
-    const etudiants = await Etudiant.findAll()
+    const etudiants = await Etudiant.findAll({
+        include: {
+            model: Niveau
+        }
+    })
 
-    res.status(200).json(students)
+    res.status(200).json(etudiants)
 }
 )
 
-//@desc get one student
-//@route GET /api/students/:id
+//@desc get one Etudiant
+//@route GET /api/Etudiants/:id
 //@acces Private
-const getOneStudent = asyncHandler(async (req, res) => {
-    const etudiant = await Etudiant.findByPk(req.params.id,{
+const getOneEtudiant = asyncHandler(async (req, res) => {
+    const etudiant = await Etudiant.findByPk(req.params.id, {
         include: {
             model: Personne
         }
@@ -36,124 +40,128 @@ const getOneStudent = asyncHandler(async (req, res) => {
 })
 
 
-const postStudent = asyncHandler(async (req, res) => {
+const postEtudiant = asyncHandler(async (req, res) => {
     const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
 
-    const fetchedStudent = await Student.findOne({ where:{[Op.or]: [{ cin }, {phone}, {email}
-    ]}
-})
+    const fetchedEtudiant = await Etudiant.findOne({
+        where: {
+            [Op.or]: [{ cin }, { phone }, { email }
+            ]
+        }
+    })
 
-    if (fetchedStudent) {
-        res.status(400).json({message: "Etudiant déja existant"})
+    if (fetchedEtudiant) {
+        res.status(400).json({ message: "Etudiant déja existant" })
     } else {
-        const student = await Student.create({
-            lastname, 
-            firstname, 
-            cin, 
-            email, 
-            phone, 
-            course, 
-            level, 
-            birth_place, 
+        const Etudiant = await Etudiant.create({
+            lastname,
+            firstname,
+            cin,
+            email,
+            phone,
+            course,
+            level,
+            birth_place,
             birth_date,
             profile_pic: req.file.path
         })
 
         res.status(200).json({
             'message': "Etudiant ajouté avec succès.",
-            'student': student
+            'Etudiant': Etudiant
         })
     }
 })
 
-    //@desc update a student
-    //@route PUT /api/students/:id
-    //@acces Private
-    const updateStudent = asyncHandler(async (req, res) => {
-        const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
-        const fetchedStudent = await Student.findByPk(req.params.id)
-        
-        if (!fetchedStudent) {
-            res.status(400).json({message : 'this student does not exist'})
-        }
-        
-                await Student.update({
-                    lastname, 
-                    firstname, 
-                    cin, 
-                    email, 
-                    phone, 
-                    course, 
-                    level, 
-                    birth_place, 
-                    birth_date,
-                },{ where : {
-                    student_code : req.params.id
-                }
+//@desc update a Etudiant
+//@route PUT /api/Etudiants/:id
+//@acces Private
+const updateEtudiant = asyncHandler(async (req, res) => {
+    const { lastname, firstname, cin, email, phone, course, level, birth_place, birth_date } = req.body
+    const fetchedEtudiant = await Etudiant.findByPk(req.params.id)
 
-                
-                }
-                ).then(() => {
-                    fs.unlinkSync(fetchedStudent.profile_pic)
-                    res.status(200).send('Etudiant modifié')
-                }).catch(err => {
-                    res.status(500).json({message: err.parent.detail})
-                })   
-
-    })
-
-    const deleteStudent = asyncHandler(async (req,res)=>{
-        const fetchedStudent = await Student.findByPk(req.params.id);
-    if (!fetchedStudent) {
-        res.status(400).json({message : "this student does not exist" });
+    if (!fetchedEtudiant) {
+        res.status(400).json({ message: 'this Etudiant does not exist' })
     }
 
-    await Student.destroy({where:{student_code: req.params.id}});
-    fs.unlinkSync(fetchedStudent.profile_pic)
-    res.status(200).json({message : `Etudiant ${fetchedStudent.name} supprimé`});
+    await Etudiant.update({
+        lastname,
+        firstname,
+        cin,
+        email,
+        phone,
+        course,
+        level,
+        birth_place,
+        birth_date,
+    }, {
+        where: {
+            Etudiant_code: req.params.id
+        }
 
+
+    }
+    ).then(() => {
+        fs.unlinkSync(fetchedEtudiant.profile_pic)
+        res.status(200).send('Etudiant modifié')
+    }).catch(err => {
+        res.status(500).json({ message: err.parent.detail })
     })
 
-    const getPromotion = asyncHandler(async (req,res)=> {
-        const promotion = await Student.findAll({
-            where : {
-                niveauId : req.body.niveauId
-            }
-        }).then(()=> {
-            res.status(200).json(promotion)
-        }).catch(err =>{
-            res.status(500).json(err.parent.detail)
-        })
-    
+})
+
+const deleteEtudiant = asyncHandler(async (req, res) => {
+    const fetchedEtudiant = await Etudiant.findByPk(req.params.id);
+    if (!fetchedEtudiant) {
+        res.status(400).json({ message: "this Etudiant does not exist" });
+    }
+
+    await Etudiant.destroy({ where: { Etudiant_code: req.params.id } });
+    fs.unlinkSync(fetchedEtudiant.profile_pic)
+    res.status(200).json({ message: `Etudiant ${fetchedEtudiant.name} supprimé` });
+
+})
+
+const getPromotion = asyncHandler(async (req, res) => {
+    const promotion = await Etudiant.findAll({
+        where: {
+            niveauId: req.body.niveauId
+        }
+    }).then(() => {
+        res.status(200).json(promotion)
+    }).catch(err => {
+        res.status(500).json(err.parent.detail)
     })
 
-    const updateStudentPic = async (req, res) => {
-        let { id } = req.params
-        const fetchedStudent = await Student.findByPk(id)
-        
-        await Student.update({
-            profil_pic: req.file.path,
-        }, {
-            where: { id: id }
-        })
+})
+
+const updateEtudiantPic = async (req, res) => {
+    let { id } = req.params
+    const fetchedEtudiant = await Etudiant.findByPk(id)
+
+    await Etudiant.update({
+        profil_pic: req.file.path,
+    }, {
+        where: { id: id }
+    })
         .then(_ => {
-            if(fs.existsSync(fetchedStudent.profil_pic)){        
-                fs.unlinkSync(fetchedStudent.profil_pic)
+            if (fs.existsSync(fetchedEtudiant.profil_pic)) {
+                fs.unlinkSync(fetchedEtudiant.profil_pic)
             }
-            Student.findByPk(id).then(student => res.status(200).json({ data: student, message: 'Student updated' }))
+            Etudiant.findByPk(id).then(Etudiant => res.status(200).json({ data: Etudiant, message: 'Etudiant updated' }))
         })
         .catch(err => {
             console.error(err)
             res.status(500).json({ message: err })
         })
-    }
+}
 
 module.exports = {
-    getAllStudents,
-    getOneStudent,
-    postStudent,
-    updateStudent,
-    deleteStudent,
+    getAllEtudiants,
+    getOneEtudiant,
+    postEtudiant,
+    updateEtudiant,
+    deleteEtudiant,
     getPromotion,
-    updateStudentPic
+    updateEtudiantPic
 }

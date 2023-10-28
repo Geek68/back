@@ -5,7 +5,7 @@ const reader = require ('xlsx')
 
 const db = require('../models')
 
-const { Prof, Matiere, Seance, UserAccount } = db
+const { Prof, Personne, EC, TrancheHoraire, UserAccount } = db
 
 
 const InitCreateProf = async (req, res) => {
@@ -44,11 +44,9 @@ const InitCreateProf = async (req, res) => {
 
 const FindProf = async (req, res) => {
     await Prof.findAll({
-        include: [{
-            model: Matiere
-        },
+        include: [
         {
-            model: Seance
+            model: TrancheHoraire
         },
         {
             model: UserAccount
@@ -60,47 +58,64 @@ const FindProf = async (req, res) => {
 
 
 const CreateProf = async (req, res) => {
-    const { firstname, lastname, title, email, phone } = req.body
-    
-    await Prof.findOne({
-        where:{[Op.or]: [{phone}, {email}]}
-    })
-    .then(async _p => {
-        if(_p){
-            res.status(400).json({message : 'This Prof already exist'})
-            fs.unlinkSync(req.file.path)
-        }else{
-            await Prof.create({
-                firstname: firstname,
-                lastname: lastname,
-                phone: phone,
-                title: title,
-                email: email,
-                profil_pic_path: req.file.path
-            }).then(prof => {
-                res.status(201).json({message: `${prof.firstname} ${prof.lastname} a été enregistré dans la base de données`, data:prof})
-                CreateUserAccount(prof.firstname, prof.lastname, prof.id)
-            }).catch(err =>{
-                console.error(err)
-                res.status(500).json({message: err})
-            })
+    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
+        telephone, email, sexe, situation_matrimoniale, adresse, titre } = req.body
         
-        }
-    }).catch(err => {
-        fs.unlinkSync(req.file.path)
-        res.status(500).json({message: err})
-    })
+        await Personne.findOne({
+            include: {
+                model: Prof
+            },
+            where:{[Op.or]: [{telephone}, {email}, {cin}]}
+        })
+        .then(async _p => {
+            console.log(_p)
+            if(_p){
+                res.status(400).json({message : 'Prof deja existant'})
+                // fs.unlinkSync(req.file.path)
+            }else{
+                await Prof.create({
+                        titre,
+                        photo_prof : req.file.path,
+                        Personne : {
+                            nom, 
+                            prenoms, 
+                            date_naissance, 
+                            lieu_naissance, 
+                            cin, 
+                            date_delivranceCIN, 
+                            lieu_delivranceCIN,
+                            telephone, 
+                            email, 
+                            sexe, 
+                            situation_matrimoniale, 
+                            adresse
+                        }   
+                
+                },{
+                    include: Personne
+                }).then(prof => {
+                        res.status(201).json({message: `${prof.Personne.nom} ${prof.Personne.prenoms} a été enregistré dans la base de données`, data:prof})
+                        CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)
+                    
+                }).catch(err =>{
+                    console.error(err)
+                    res.status(500).json({message: err})
+                })
+            
+            }
+        }).catch(err => {
+            // fs.unlinkSync(req.file.path)
+            res.status(500).json({message: err})
+        })
 
 }
 
 const FindProfById = async (req, res) => {
     let { id } = req.params
     const prof = await Prof.findByPk(id, {
-        include: [{
-            model: Matiere
-        },
+        include: [
         {
-            model: Seance
+            model: TrancheHoraire
         },
         {
             model: UserAccount

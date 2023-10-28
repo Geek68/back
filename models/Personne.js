@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) =>{
             allowNull: false,
           },
 
-          adresse_residence: {
+          adresse: {
             type: DataTypes.STRING,
             allowNull: false,
           },

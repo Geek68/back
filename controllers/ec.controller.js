@@ -1,103 +1,118 @@
 const db = require('../models')
-const {EC,Niveau,Prof, Personne} = db
+const {EC,Niveau,Prof, Personne, TrancheHoraire} = db
 const asyncHandler = require('express-async-handler')
 
 
 
-const getAllMatiere = asyncHandler(async (req, res) => {
+const getAllEC = asyncHandler(async (req, res) => {
 
-    const matieres = await Matiere.findAll({
-        include: [{
-            model: Prof
-        },
+    const ECs = await EC.findAll({
+        include: [
         {
             model: Niveau
+        },
+        {
+            model: TrancheHoraire,
+            include : {
+                model: Prof,
+                include : {
+                    model: Personne
+                }
+            }
         }
        ]
     })
 
-    res.status(200).json(matieres)
+    res.status(200).json(ECs)
 }
 )
 
 
-const getOneMatiere = asyncHandler(async (req, res) => {
-    const matiere = await Matiere.findByPk(req.params.id,{
-        include: [{
-            model: Niveau
-        },
-        {
-            model: Prof
-        }]
+const getOneEC = asyncHandler(async (req, res) => {
+    const EC = await EC.findByPk(req.params.id,{
+        include: [
+            {
+                model: Niveau
+            },
+            {
+                model: TrancheHoraire,
+                include : {
+                    model: Prof,
+                    include : {
+                        model: Personne
+                    }
+                }
+            }
+           ]
     })
 
-    if (!matiere) {
+    if (!EC) {
         res.status(400).json({
-            message: 'Matiere non existant'
+            message: 'EC non existant'
         })
     }
 
-    res.status(200).json(matiere)
+    res.status(200).json(EC)
 
 })
 
 
-const postMatiere = asyncHandler(async (req, res) => {
-    const { designation, profId, niveauId  } = req.body
+const postEC = asyncHandler(async (req, res) => {
+    const { nom_element, niveauId  } = req.body
 
-    const fetchedMatiere = await Matiere.findOne({ where: {designation : designation}
+    const fetchedEC = await EC.findOne({ where: {nom_element : nom_element}
 })
 
-    if (fetchedMatiere) {
-        res.status(400).json({message: "Matiere déja existant"})
+    if (fetchedEC) {
+        res.status(400).json({message: "EC déja existant"})
     } else {
-        const matiere = await Matiere.create({
-           designation,
-           profId,
+        const EC = await EC.create({
+            nom_element,
            niveauId
         })
 
         res.status(200).json({
-            'message': "Matiere ajouté avec succès.",
-            'Matiere': matiere
+            'message': "EC ajouté avec succès.",
+            'EC': EC
         })
     }
 })
 
-    const updateMatiere = asyncHandler(async (req, res) => {
-        const { designation, profId } = req.body
-        const fetchedMatiere = await Matiere.findByPk(req.params.id)
+    const updateEC = asyncHandler(async (req, res) => {
+        const { nom_element, niveauId } = req.body
+        const fetchedEC = await EC.findByPk(req.params.id)
         
-        if (!fetchedMatiere) {
-            res.status(400).json({message : 'Matiere non existante'})
+        if (!fetchedEC) {
+            res.status(400).json({message : 'EC non existante'})
         }
         
-                await Matiere.update({
-                   designation,
-                   profId
+                await EC.update({
+                    nom_element,
+                    niveauId
+                   
                 },{ where : {
-                    code_matiere : req.params.id
+                    code_element : req.params.id
                 }
 
                 
                 }
                 ).then(() => {
                     
-                    res.status(200).send('Matiere modifiée')
+                    res.status(200).send('EC modifiée')
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})
                 })   
 
     })
 
-    const deleteMatiere = asyncHandler(async (req,res)=>{
-        const fetchedMatiere = await Matiere.findByPk(req.params.id);
-    if (!fetchedMatiere) {
-        res.status(400).json({message : "Matiere non existante" });
+    const deleteEC = asyncHandler(async (req,res)=>{
+        const fetchedEC = await EC.findByPk(req.params.id);
+    if (!fetchedEC) {
+        res.status(400).json({message : "EC non existante" });
     }
 
-    await Matiere.destroy({where:{code_matiere: req.params.id}});
-    res.status(200).json({message : `Matiere ${fetchedMatiere.designation} supprimée`});
+    await EC.destroy({where:{code_element: req.params.id}});
+    res.status(200).json({message : `EC ${fetchedEC.nom_element} supprimée`});
 
     })
     
@@ -106,9 +121,9 @@ const postMatiere = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-    getAllMatiere,
-    getOneMatiere,
-    postMatiere,
-    updateMatiere,
-    deleteMatiere,
+    getAllEC,
+    getOneEC,
+    postEC,
+    updateEC,
+    deleteEC,
 }
