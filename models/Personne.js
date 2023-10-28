@@ -16,37 +16,14 @@ module.exports = (sequelize, DataTypes) =>{
           allowNull: true,
         },
 
-        date_naissance: {
-            type: DataTypes.DATE,
-            allowNull: false,
-          },
         
-        lieu_naissance: {
-            type: DataTypes.STRING,
-            allowNull: true,
-          },
 
           sexe: {
             type: DataTypes.STRING,
             allowNull: false,
           },
 
-          cin: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-          },
-
-          date_delivranceCIN: {
-            type: DataTypes.DATE,
-            allowNull: false,
-          },
-
-          lieu_delivranceCIN: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-
+          
           email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -57,11 +34,6 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
-          },
-
-          situation_matrimoniale: {
-            type: DataTypes.STRING,
-            allowNull: false,
           },
 
           adresse: {

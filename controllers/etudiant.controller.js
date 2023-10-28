@@ -94,20 +94,20 @@ const postEtudiant = asyncHandler(async (req, res) => {
             } else {
                 await Inscrit.create({
                     Etudiant: {
-                        nationalite,
-                        numero_passeport,
-                        Personne: {
-                            nom,
-                            prenoms,
+                            nationalite,
+                            numero_passeport,
                             date_naissance,
                             lieu_naissance,
                             cin,
                             date_delivranceCIN,
                             lieu_delivranceCIN,
+                            situation_matrimoniale,
+                        Personne: {
+                            nom,
+                            prenoms, 
                             telephone,
                             email,
                             sexe,
-                            situation_matrimoniale,
                             adresse
                         }
                     },

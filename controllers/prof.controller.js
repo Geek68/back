@@ -61,14 +61,14 @@ const FindProf = async (req, res) => {
 
 
 const CreateProf = async (req, res) => {
-    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
-        telephone, email, sexe, situation_matrimoniale, adresse, titre } = req.body
+    const { nom, prenoms, 
+        telephone, email, sexe, adresse, titre, fonction } = req.body
         
         await Personne.findOne({
             include: {
                 model: Prof
             },
-            where: { [Op.or]: [{ telephone }, { cin }, { email }] }
+            where: { [Op.or]: [{ telephone }, { email }] }
         })
         .then(async _p => {
             console.log(_p)
@@ -78,19 +78,14 @@ const CreateProf = async (req, res) => {
             }else{
                 await Prof.create({
                         titre,
-                        // photo_prof : req.file.path,
+                        fonction,
+                        photo_prof : req.file.path,
                         Personne : {
                             nom,
                             prenoms,
-                            date_naissance,
-                            lieu_naissance,
-                            cin,
-                            date_delivranceCIN,
-                            lieu_delivranceCIN,
                             telephone,
                             email,
                             sexe,
-                            situation_matrimoniale,
                             adresse
                         }   
                 
@@ -101,7 +96,7 @@ const CreateProf = async (req, res) => {
                         CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)
                     
                 }).catch(err =>{
-                    console.error(err.parent.detail)
+                    console.error(err)
                     res.status(500).json({message: err.parent.detail})
                 })
             
