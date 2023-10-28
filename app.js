@@ -37,6 +37,7 @@ app.use("/api/tranchehoraire", require("./routes/tranchehoraire.routes"));
 app.use("/api/niveau", require("./routes/niveau.routes"));
 app.use("/api/ec", require("./routes/ec.routes"));
 app.use("/api/groupe", require("./routes/groupe.routes"));
+app.use("/api/personne_groupe", require("./routes/personne_groupe.routes"))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

@@ -28,7 +28,19 @@ const getPersonsByGroup = async (req, res) => {
   } else res.status(404).json({ message: "Group not found" });
 };
 
+const deletePersonGroupe = async (res, res) => {
+  const { id } = req.params;
+  const persongroupe = await Personne_Groupe.findByPk(id);
+  if (persongroupe) {
+    res.status(400).json({ message: "Personne_groupe not found" });
+  } else {
+    await Personne_Groupe.destroy({ id });
+    res.status(200).json({ message: "Personne_group deleted" });
+  }
+};
+
 module.exports = {
   addPersonToGroup,
   getPersonsByGroup,
+  deletePersonGroupe,
 };
