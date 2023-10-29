@@ -29,15 +29,27 @@ module.exports = (sequelize, DataTypes) =>{
     const Inscrit = sequelize.define('Inscrits', {
         etudiantId: {
             type: DataTypes.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            references: {
+              model: db.Etudiant, 
+              key: 'id_etudiant'
+            }
           },
           niveauId: {
             type: DataTypes.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            references: {
+              model: db.Niveau, 
+              key: 'code_niveau'
+            }
           },
         anneeUniversitaireId :{
             type: DataTypes.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            references: {
+              model: db.AnneeUniversitaire, 
+              key: 'id_anneeUniversitaire'
+            }
         },
 
         code_redoublement: {

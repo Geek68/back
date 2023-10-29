@@ -78,7 +78,7 @@ const getOneEtudiant = asyncHandler(async (req, res) => {
 
 const postEtudiant = asyncHandler(async (req, res) => {
   const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
-    telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
+    telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
 
 try {
   await Inscrit.create({
@@ -88,6 +88,7 @@ try {
       date_naissance,
       lieu_naissance,
       cin,
+      numero_inscription,
       date_delivranceCIN,
       lieu_delivranceCIN,
       situation_matrimoniale,

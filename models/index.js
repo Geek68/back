@@ -82,10 +82,10 @@ db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKe
 
 
 db.Etudiant.hasMany(db.Inscrit,{
-    foreignKey: 'etudiantId', targetKey: 'numero_inscription'
+    foreignKey: 'etudiantId', targetKey: 'id_etudiant'
 })
 db.Inscrit.belongsTo(db.Etudiant, {
-    foreignKey: 'etudiantId', targetKey: 'numero_inscription'
+    foreignKey: 'etudiantId', targetKey: 'id_etudiant'
 })
 db.Niveau.hasMany(db.Inscrit,{
     foreignKey: 'niveauId', targetKey: 'code_niveau'

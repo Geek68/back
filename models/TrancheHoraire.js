@@ -16,9 +16,9 @@ module.exports = (sequelize, DataTypes) =>{
           allowNull: false
       },
       
-      heure_fin :{
-        type: DataTypes.TIME,
-        allowNull: false
+        heure_fin :{
+          type: DataTypes.TIME,
+          allowNull: false
     },
 
     })

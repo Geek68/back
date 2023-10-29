@@ -1,10 +1,15 @@
 module.exports = (sequelize, DataTypes) =>{
   const Etudiant = sequelize.define('Etudiants', {
-      numero_inscription: {
+      id_etudiant: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
+      numero_inscription: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+
 
       nationalite: {
         type: DataTypes.STRING,
@@ -27,11 +32,10 @@ module.exports = (sequelize, DataTypes) =>{
       cin: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
       },
 
       date_delivranceCIN: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
 
