@@ -29,7 +29,7 @@ function checkFileType(file, cb){
     fileFilter: function(req, file, cb){
       checkFileType(file, cb);
     }
-  }).single('profile_pic');
+  }).single('photo');
 
   module.exports = {
     upload
