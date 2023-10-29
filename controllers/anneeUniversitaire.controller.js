@@ -1,4 +1,4 @@
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 const db = require('../models')
 const {AnneeUniversitaire,AnneeUniversitaire_Semestre, Niveau,Prof, Personne, TrancheHoraire, Semestre} = db
 const asyncHandler = require('express-async-handler')
@@ -62,14 +62,14 @@ const postAnneeUniversitaire = asyncHandler(async (req, res) => {
 })
 
     if (fetchedAnneeUniversitaire) {
-        res.status(400).json({message: "AnneeUniversitaire déja existant"})
+        res.status(400).json({message: "Année Universitaire déja existant"})
     } else {
         await AnneeUniversitaire.create({
             annee_debut,
             annee_fin
         }).then(async anneeUniversitaire => {
             await Semestre.findAll().then(semestres => {
-                semestres.forEach(semestre => {
+                semestres.map(semestre => {
                     db.AnneeUniversitaire_Semestre.create({
                         semestreId : semestre.id_semestre,
                         anneeUniversitaireId : anneeUniversitaire.id_anneeUniversitaire

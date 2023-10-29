@@ -46,7 +46,7 @@ const addPersonsToGroupe = asyncHandler(async (req, res) => {
   const { groupeId, personneIds } = req.body
 
   if (personneIds.length === 0) {
-    res.status(500).json({ message: 'Impossible d\'ajouter car pas d\'etudiant selectionner' })
+    res.status(500).json({ message: 'Impossible d\'ajouter car pas d\'etudiant selectionné' })
   }
 
   const groupe = await Groupe.findByPk(groupeId).then(() => {
@@ -56,7 +56,7 @@ const addPersonsToGroupe = asyncHandler(async (req, res) => {
 
   })
 
-  personneIds.forEach(async personneId => {
+  personneIds.map(async personneId => {
     const fetchPersonGroupe = await Personne_Groupe.findOne({
       where: { [Op.or]: [{ groupeId }, { personneId }] }
     })
