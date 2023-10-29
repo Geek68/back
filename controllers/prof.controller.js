@@ -30,16 +30,8 @@ const InitCreateProf = async (req, res) => {
         fs.unlinkSync(req.file.destination+'/'+req.file.filename)
 
         try{
-            const currentCountRows = await Prof.count()
-            const bulkCreateProf = Bc(datas)
-
-            Promise.all(bulkCreateProf).then(async()=>{
-                const NewCountRows = await Prof.count()
-                const rowsAffected = NewCountRows - currentCountRows
-                rowsAffected > 0 ? 
-                res.status(201).json({message: `${rowsAffected} rows affected`}) :
-                res.status(200).json({message: 'No necessary rows to update'})
-            })
+            bulkCreateProf(datas)
+            res.status(201).json({message: 'Data Uploaded'})
         }catch(err){
             res.status(500).json({message: "An error occured"})
         }
@@ -48,38 +40,36 @@ const InitCreateProf = async (req, res) => {
     }
 }
 
-const Bc = (datas)=>{
-    const bc = datas.map(async data => {
+const bulkCreateProf = (datas)=>{
+    datas.forEach(async data => {
         const {photo_prof, nom, prenoms, titre, fonction, email, telephone} = data
-        const fetchedPerson = await Personne.findOne({
+        await Personne.findOne({
             include: {
                 model: Prof
             },
             where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
+        }).then(async _p => {
+            if(_p){
+                return
+            }else{
+                await Prof.create({
+                        titre : titre,
+                        fonction : fonction,
+                        photo_prof : photo_prof,
+                        Personne : {
+                            nom : nom,
+                            prenoms : prenoms,
+                            telephone : `+${telephone}`,
+                            email : email,
+                        }                       
+                },{
+                    include: Personne
+                }).then(prof => {
+                    CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)                      
+                })
+            }
         })
-        
-        if(fetchedPerson){
-            return
-        }else{
-            await Prof.create({
-                    titre : titre,
-                    fonction : fonction,
-                    photo_prof : photo_prof,
-                    Personne : {
-                        nom : nom,
-                        prenoms : prenoms,
-                        telephone : `+${telephone}`,
-                        email : email,
-                    }                       
-            },{
-                include: Personne
-            }).then(prof => {
-                CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)                      
-            })
-        }
     })
-
-    return bc
 }
 
 const FindProf = async (req, res) => {
@@ -169,41 +159,40 @@ const FindProfById = async (req, res) => {
 const UpdateProf = async (req, res) => {
     const { nom, prenoms, 
         telephone, email, titre, fonction } = req.body  
-        const fetchedProf = await Prof.findByPk(id)
+        const fetchedProf = await Prof.findByPk(req.params.id)
 
     if (!fetchedProf) {
         res.status(400).json({message : 'this Prof does not exist'})
-    }
-    console.log(fetchedProf.personneId)    
-    await Prof.update({
-        titre,
-        fonction,
-      
-    },{ where : {
-        code_prof : req.params.id
-    }
-
-    
-    })
-    .then(async () => {
-     
-        await Personne.update({
-            nom, prenoms, email, telephone
-        }, { where : {
-            id_personne : fetchedProf.personneId
+    } else {
+        Prof.update({
+            titre,
+            fonction,
+          
+        },{ where : {
+            code_prof : req.params.id
         }
     
         
-        }).then(() => {
-            res.status(200).json({
-                message: `Prof modifié avec succès`
+        })
+        .then(async () => {
+         
+            Personne.update({
+                nom, prenoms, email, telephone
+            }, { where : {
+                id_personne : fetchedProf.personneId
+            }
+        
+            }).then(() => {
+                res.status(200).json({
+                    message: `Prof modifié avec succès`
+                })
             })
         })
-    })
-    .catch(err => {
-        console.error(err)
-        res.status(500).json({ message: err })
-    })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ message: err })
+        })
+    }
 }
 
 const UpadteProfPic = async (req, res) => {
