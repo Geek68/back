@@ -6,7 +6,7 @@ const asyncHandler = require('express-async-handler')
 const getAllSalle = asyncHandler(async (req, res) => {
 
     const Salles = await Salle.findAll({
-        order:[['code_niveau', 'ASC']],
+        order:[['code_salle', 'ASC']],
         include: {
             model: TrancheHoraire,
             include: { model: Groupe,
