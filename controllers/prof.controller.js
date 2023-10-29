@@ -220,7 +220,7 @@ const DeleteProf = async (req, res) => {
         include: [{ model : UserAccount},{model: Personne}]
     })
     if(!fetchedProf){
-        res.status(400).json({message : "this Prof does not exist" });
+        res.status(400).json({message : "this Prof does not exist"});
     }
     else{
         await Prof.destroy({
