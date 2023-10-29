@@ -11,31 +11,31 @@ const fs = require('fs')
 const getAllEtudiants = asyncHandler(async (req, res) => {
 
 
-    const etudiants = await Etudiant.findAll({
-        include: [
-            {
-                model: Personne,
-                include: {
-                    model: Groupe,
-                    include: {
-                        model: TrancheHoraire
-                    }
-                }
-            },
+  const etudiants = await Etudiant.findAll({
+    include: [
+      {
+        model: Personne,
+        include: {
+          model: Groupe,
+          include: {
+            model: TrancheHoraire
+          }
+        }
+      },
 
-            {
-                model: Inscrit,
-                include: [{
-                    model: Niveau
-                },
-                { model: AnneeUniversitaire }]
-            }
+      {
+        model: Inscrit,
+        include: [{
+          model: Niveau
+        },
+        { model: AnneeUniversitaire }]
+      }
 
 
-        ]
-    })
+    ]
+  })
 
-    res.status(200).json(etudiants)
+  res.status(200).json(etudiants)
 }
 )
 
@@ -43,102 +43,88 @@ const getAllEtudiants = asyncHandler(async (req, res) => {
 //@route GET /api/Etudiants/:id
 //@acces Private
 const getOneEtudiant = asyncHandler(async (req, res) => {
-    const etudiant = await Etudiant.findByPk(req.params.id, {
-        include: [
-            {
-                model: Personne,
-                include: {
-                    model: Groupe,
-                    include: {
-                        model: TrancheHoraire
-                    }
-                }
-            },
+  const etudiant = await Etudiant.findByPk(req.params.id, {
+    include: [
+      {
+        model: Personne,
+        include: {
+          model: Groupe,
+          include: {
+            model: TrancheHoraire
+          }
+        }
+      },
 
-            {
-                model: Inscrit,
-                include: [{
-                    model: Niveau
-                },
-                { model: AnneeUniversitaire }]
-            }
+      {
+        model: Inscrit,
+        include: [{
+          model: Niveau
+        },
+        { model: AnneeUniversitaire }]
+      }
 
 
-        ]
+    ]
+  })
+  if (!etudiant) {
+    res.status(400).json({
+      message: 'Etudiant non existant'
     })
-    if (!etudiant) {
-        res.status(400).json({
-            message: 'Etudiant non existant'
-        })
-    }
+  }
 
-    res.status(200).json(etudiant)
+  res.status(200).json(etudiant)
 
 });
 
 const postEtudiant = asyncHandler(async (req, res) => {
-    const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
-        telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
+  const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
+    telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
 
-    await Inscrit.findOne({
-        include: {
-            model: Etudiant 
-        },
-        where: { [Op.and]: [{ anneeUniversitaireId }, { niveauId }, { Etudiant }] }
-    })
-        .then(async _p => {
-            console.log(_p)
-            if (_p) {
-                res.status(400).json({ message: 'Etudiant deja existant' })
-                fs.unlinkSync(req.file.path)
-            } else {
-                await Inscrit.create({
-                    Etudiant: {
-                            nationalite,
-                            numero_passeport,
-                            date_naissance,
-                            lieu_naissance,
-                            cin,
-                            date_delivranceCIN,
-                            lieu_delivranceCIN,
-                            situation_matrimoniale,
-                            sexe,
-                            adresse,
-                        Personne: {
-                            nom,
-                            prenoms, 
-                            telephone,
-                            email,
-                        }
-                    },
+try {
+  await Inscrit.create({
+    Etudiant: {
+      nationalite,
+      numero_passeport,
+      date_naissance,
+      lieu_naissance,
+      cin,
+      date_delivranceCIN,
+      lieu_delivranceCIN,
+      situation_matrimoniale,
+      sexe,
+      adresse,
+      Personne: {
+        nom,
+        prenoms,
+        telephone,
+        email,
+      }
+    },
 
-                    niveauId,
-                    anneeUniversitaireId,
-                    code_redoublement,
-                    // photo_etudiant : req.file.path
+    niveauId,
+    anneeUniversitaireId,
+    code_redoublement,
+    photo_etudiant: req.file.path
 
-                }, {
-                    include: [{
-                        model: Etudiant,
-                        include: { model: Personne }
-                    }]
-                }).then(inscrit => {
+  }, {
+    include: [{
+      model: Etudiant,
+      include: { model: Personne }
+    }]
+  }).then(inscrit => {
+    res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
 
-
-                    console.log(inscrit)
-                    res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
+  }).catch(err => {
+    console.error(err)
+    res.status(500).json({ message: err.parent.detail })
+  })
+} catch (error) {
+  res.status(500).json({message: error})
+}
+    
 
 
-                }).catch(err => {
-                    console.error(err)
-                    res.status(500).json({ message: err.parent.detail })
-                })
 
-            }
-        }).catch(err => {
-            fs.unlinkSync(req.file.path)
-            res.status(500).json({ message: err })
-        })
 })
 
 //@desc update a Etudiant

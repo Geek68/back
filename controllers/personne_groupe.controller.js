@@ -56,7 +56,7 @@ const addPersonsToGroupe = asyncHandler(async (req, res) => {
 
   })
 
-  personneIds.map(async personneId => {
+  const pg = personneIds.map(async personneId => {
     const fetchPersonGroupe = await Personne_Groupe.findOne({
       where: { [Op.or]: [{ groupeId }, { personneId }] }
     })
@@ -71,7 +71,9 @@ const addPersonsToGroupe = asyncHandler(async (req, res) => {
     }).then(() => {
       res.status(201).json({ message: `Personne ajoutée dans le groupe ${groupe.nom_groupe}` })
     })
-  }).then(() => {
+  })
+  
+  Promise.all(pg).then(() => {
     res.status(200).json({ message: `Toutes les personnes sont ajoutées au groupe ${groupe.nom_groupe}` })
   }).catch(err => {
     res.status(500).json({ message: err })

@@ -76,15 +76,9 @@ db.Absence.belongsTo(db.Personne, {
 })
 
 
-db.Etudiant.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'etudiantId'})
 db.Etudiant.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'etudiantId'})
-
-db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
-db.AnneeUniversitaire.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
-
-db.Niveau.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'niveauId'})
 db.Niveau.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'niveauId'})
-
+db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
 
 
 db.Etudiant.hasMany(db.Inscrit,{
