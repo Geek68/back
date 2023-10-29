@@ -1,114 +1,140 @@
+const { Op } = require('sequelize')
 const db = require('../models')
-const { Seance, Prof, Absence, Student } = db
+const { TrancheHoraire, Prof, Absence, Etudiant, Personne } = db
 const asyncHandler = require('express-async-handler')
 
 
 
-const getAllSeance = asyncHandler(async (req, res) => {
+const getAllTrancheHoraire = asyncHandler(async (req, res) => {
 
-    const seances = await Seance.findAll({
+    const TrancheHoraires = await TrancheHoraire.findAll({
         include: [{
             model: Prof
         },
         {
             model: Absence,
             include: {
-                model: Student
+                model: Personne,
+                include: {
+                    model: Etudiant
+                }
             }
         },
-    {
-        model: Prof
-    }]
+   ]
     })
 
-    res.status(200).json(seances)
+    res.status(200).json(TrancheHoraires)
 }
 )
 
 
-const getOneSeance = asyncHandler(async (req, res) => {
-    const seance = await Seance.findByPk(req.params.id)
-    if (!seance) {
+const getOneTrancheHoraire = asyncHandler(async (req, res) => {
+    const trancheHoraire = await TrancheHoraire.findByPk(req.params.id,{
+        include: [{
+            model: Prof
+        },
+        {
+            model: Absence,
+            include: {
+                model: Personne,
+                include: {
+                    model: Etudiant
+                }
+            }
+        },
+   ]
+    })
+    if (!trancheHoraire) {
         res.status(400).json({
-            message: 'Seance non existante'
+            message: 'TrancheHoraire non existante'
         })
     }
 
-    res.status(200).json(seance)
+    res.status(200).json(trancheHoraire)
 
 })
 
 
-const postSeance = asyncHandler(async (req, res) => {
-    const { designation, salleId, matiereId, profId } = req.body
-    const date = new Date()
+const postTrancheHoraire = asyncHandler(async (req, res) => {
+    const { date_trancheHoraire, heure_debut, heure_fin, salleId, elementId, semestreId, typetranchehoraireId, profId, groupeId } = req.body
 
-    const fetchedSeance = await Seance.findOne({
-        where: { designation: designation }
+    const fetchedTrancheHoraire = await TrancheHoraire.findOne({
+        where: { [Op.and]: [{ date_trancheHoraire}, { heure_debut }, {elementId}, {salleId}] }
     })
 
-    if (fetchedSeance) {
-        res.status(400).json({ message: "Seance déja existant" })
+    if (fetchedTrancheHoraire) {
+        res.status(400).json({ message: "TrancheHoraire déja existant" })
     } else {
-        const seance = await Seance.create({
-            designation,
-            salleId,
-            matiereId,
-            profId,
-            date_seance: date
+        const trancheHoraire = await TrancheHoraire.create({
+            date_trancheHoraire, 
+            heure_debut, 
+            heure_fin, 
+            salleId, 
+            elementId, 
+            semestreId, 
+            typetranchehoraireId, 
+            profId, 
+            groupeId
         })
 
         res.status(200).json({
-            'message': "Seance ajoutée avec succès.",
-            'Seance': seance
+            'message': "TrancheHoraire ajoutée avec succès.",
+            'TrancheHoraire': trancheHoraire
         })
     }
 })
 
 
-const updateSeance = asyncHandler(async (req, res) => {
-    const { designation, date_seance } = req.body
-    const fetchedSeance = await Seance.findByPk(req.params.id)
+const updateTrancheHoraire = asyncHandler(async (req, res) => {
+    const { date_trancheHoraire, heure_debut, heure_fin, salleId, elementId, semestreId, typetranchehoraireId, profId, groupeId } = req.body
+    const fetchedTrancheHoraire = await TrancheHoraire.findByPk(req.params.id)
 
-    if (!fetchedSeance) {
-        res.status(400).json({ message: 'Seance non existante' })
+    if (!fetchedTrancheHoraire) {
+        res.status(400).json({ message: 'TrancheHoraire non existante' })
     }
 
-    await Seance.update({
-        designation,
-        date_seance
+    const trancheHoraire = await TrancheHoraire.update({
+        date_trancheHoraire, 
+        heure_debut, 
+        heure_fin, 
+        salleId, 
+        elementId, 
+        semestreId, 
+        typetranchehoraireId, 
+        profId, 
+        groupeId
     }, {
         where: {
-            code_seance: req.params.id
+            code_tranchehoraire: req.params.id
         }
 
 
     }
     ).then(() => {
 
-        res.status(200).send('Seance modifiée')
+        res.status(200).send('TrancheHoraire modifiée')
     }).catch(err => {
         res.status(500).json({ message: err.parent.detail })
     })
 
 })
 
-const deleteSeance = asyncHandler(async (req, res) => {
-    const fetchedSeance = await Seance.findByPk(req.params.id);
-    if (!fetchedSeance) {
-        res.status(400).json({ message: "Seance non existante" });
+const deleteTrancheHoraire = asyncHandler(async (req, res) => {
+    const fetchedTrancheHoraire = await TrancheHoraire.findByPk(req.params.id);
+    if (!fetchedTrancheHoraire) {
+        res.status(400).json({ message: "TrancheHoraire non existante" });
     }
 
-    await Seance.destroy({ where: { code_Seance: req.params.id } });
-    res.status(200).json({ message: `Seance ${fetchedSeance.designation} supprimée` });
+    await TrancheHoraire.destroy({ where: { code_tranchehoraire: req.params.id } });
+    res.status(200).json({ message: `TrancheHoraire supprimée` });
 
 })
 
 
 module.exports = {
-    getAllSeance,
-    getOneSeance,
-    postSeance,
-    updateSeance,
-    deleteSeance,
+    getAllTrancheHoraire,
+    getOneTrancheHoraire,
+    postTrancheHoraire,
+    updateTrancheHoraire,
+    deleteTrancheHoraire,
 }

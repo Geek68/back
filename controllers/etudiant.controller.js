@@ -80,49 +80,49 @@ const postEtudiant = asyncHandler(async (req, res) => {
   const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
     telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body
 
-try {
-  await Inscrit.create({
-    Etudiant: {
-      nationalite,
-      numero_passeport,
-      date_naissance,
-      lieu_naissance,
-      cin,
-      numero_inscription,
-      date_delivranceCIN,
-      lieu_delivranceCIN,
-      situation_matrimoniale,
-      sexe,
-      adresse,
-      Personne: {
-        nom,
-        prenoms,
-        telephone,
-        email,
-      }
-    },
+  try {
+    await Inscrit.create({
+      Etudiant: {
+        nationalite,
+        numero_passeport,
+        date_naissance,
+        lieu_naissance,
+        cin,
+        numero_inscription,
+        date_delivranceCIN,
+        lieu_delivranceCIN,
+        situation_matrimoniale,
+        sexe,
+        adresse,
+        Personne: {
+          nom,
+          prenoms,
+          telephone,
+          email,
+        }
+      },
 
-    niveauId,
-    anneeUniversitaireId,
-    code_redoublement,
-    photo_etudiant: req.file.path
+      niveauId,
+      anneeUniversitaireId,
+      code_redoublement,
+      photo_etudiant: req.file.path
 
-  }, {
-    include: [{
-      model: Etudiant,
-      include: { model: Personne }
-    }]
-  }).then(inscrit => {
-    res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
+    }, {
+      include: [{
+        model: Etudiant,
+        include: { model: Personne }
+      }]
+    }).then(inscrit => {
+      res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
 
-  }).catch(err => {
-    console.error(err)
-    res.status(500).json({ message: err.parent.detail })
-  })
-} catch (error) {
-  res.status(500).json({message: error})
-}
-    
+    }).catch(err => {
+      console.error(err)
+      res.status(500).json({ message: err.parent.detail })
+    })
+  } catch (error) {
+    res.status(500).json({ message: error })
+  }
+
 
 
 
@@ -132,48 +132,59 @@ try {
 //@route PUT /api/Etudiants/:id
 //@acces Private
 const updateEtudiant = asyncHandler(async (req, res) => {
-  const {
-    lastname,
-    firstname,
-    cin,
-    email,
-    phone,
-    course,
-    level,
-    birth_place,
-    birth_date,
-  } = req.body;
-  const fetchedEtudiant = await Etudiant.findByPk(req.params.id);
+  let { id } = req.params
+  const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
+    telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body 
+        const fetchedEtudiant = await Etudiant.findByPk(id)
 
-  if (!fetchedEtudiant) {
-    res.status(400).json({ message: "this Etudiant does not exist" });
-  }
-
-  await Etudiant.update(
-    {
-      lastname,
-      firstname,
-      cin,
-      email,
-      phone,
-      course,
-      level,
-      birth_place,
-      birth_date,
-    },
-    {
-      where: {
-        Etudiant_code: req.params.id,
-      },
+    if (!fetchedEtudiant) {
+        res.status(400).json({message : 'this etudiant does not exist'})
     }
-  )
-    .then(() => {
-      fs.unlinkSync(fetchedEtudiant.profile_pic);
-      res.status(200).send("Etudiant modifié");
+        
+    await Inscrit.update({
+        
+        nationalite,
+        numero_passeport,
+        date_naissance,
+        lieu_naissance,
+        cin,
+        numero_inscription,
+        date_delivranceCIN,
+        lieu_delivranceCIN,
+        situation_matrimoniale,
+        sexe,
+        adresse,
+        Personne: {
+          nom,
+          prenoms,
+          telephone,
+          email,
+        },
+   
+        niveauId,
+        anneeUniversitaireId,
+        code_redoublement, 
+      
+
+      
+    },{
+        where: { etudiantId: id }
+    },{include: [{
+      model: Etudiant,
+      include: { model: Personne }
+    }]})
+    .then(_ => {
+        Etudiant.findByPk(id,{
+            include : {
+                model: Personne
+            }
+        }).then(etudiant => res.status(200).json({ data: etudiant, message: 'Etudiant updated' }))
     })
-    .catch((err) => {
-      res.status(500).json({ message: err.parent.detail });
-    });
+    .catch(err => {
+        console.error(err)
+        res.status(500).json({ message: err })
+    })
+
 });
 
 const deleteEtudiant = asyncHandler(async (req, res) => {

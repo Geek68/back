@@ -6,7 +6,7 @@ const { upload } = require('../middlewares/uploadImgMiddleware');
 
 
 router.route('/').get(getAllEtudiants).post(upload, postEtudiant)
-router.route('/:id').get(getOneEtudiant).put(upload, updateEtudiant).delete(deleteEtudiant)
+router.route('/:id').get(getOneEtudiant).put(updateEtudiant).delete(deleteEtudiant)
 router.route('/promotion').post(getPromotion)
 router.route('/updateEtudiantPic/:id').put(upload, updateEtudiantPic)
 

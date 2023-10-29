@@ -40,7 +40,7 @@ const CreateUserAccount = async(firstname, lastname, profId) => {
             from: 'kokorikogasy@gmail.com', // sender address
             to: `${prof.Personne.email}` , // list of receivers
             subject: 'Your login and password', // Subject line
-            text: `Your password : ${UserAccount.password} and login : ${UserAccount.login}`, // html body
+            text: `Your password : ${passw} and login : ${UserAccount.login}`, // html body
             
         };
     
