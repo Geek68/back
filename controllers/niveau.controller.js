@@ -6,6 +6,7 @@ const asyncHandler = require('express-async-handler')
 const getAllNiveau = asyncHandler(async (req, res) => {
 
     const niveaux = await Niveau.findAll({
+        order:[['code_niveau', 'ASC']],
         include: [{
             model : Inscrit,
             include : [{

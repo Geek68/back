@@ -7,6 +7,8 @@ const asyncHandler = require('express-async-handler')
 const getAllEC = asyncHandler(async (req, res) => {
 
     const ECs = await EC.findAll({
+        order:[['code_element', 'ASC']],
+
         include: [
         {
             model: Niveau

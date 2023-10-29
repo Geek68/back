@@ -8,6 +8,7 @@ const asyncHandler = require('express-async-handler')
 const getAllTrancheHoraire = asyncHandler(async (req, res) => {
 
     const TrancheHoraires = await TrancheHoraire.findAll({
+        order:[['code_tranchehoraire', 'DESC']],
         include: [{
             model: Prof
         },

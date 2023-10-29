@@ -29,14 +29,14 @@ const handleStart = async () => {
     const all_salles = await Salle.findAll()
     if(all_salles.length === 0 ){
       await Salle.bulkCreate([
-        {numero_salle : 'S001', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S002', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S003', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S004', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S005', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S006', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S007', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
-        {numero_salle : 'S008', localisation_salle: 'Rez de Chaussé', capacite_salle : 150},
+        {numero_salle : 'S001', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S002', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S003', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S004', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S005', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S006', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S007', localisation_salle: 'RDC', capacite_salle : 150},
+        {numero_salle : 'S008', localisation_salle: 'RDC', capacite_salle : 150},
       ]).then(()=>{
         console.log('Salles ajoutées avec succès')
      }).catch(err => {
