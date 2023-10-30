@@ -6,14 +6,14 @@ const fs = require('fs')
 
 
 const InitCreateEtudiant = async (req, res) => {
+  console.log("\n\n\n", req.file, "\n\n\n")
   const datas = []
-  const {niveauId, anneeUniversitaireId} = req.body
   try{
       const file = reader.readFile(req.file.destination+'/'+req.file.filename)
       const sheetNames = file.SheetNames
 
       if(sheetNames.length == 0){
-          res.status(200).json({message: 'Aucun nouveau élèment disponible'})
+          res.status(200).json({statusCode: 'OK', message: 'Aucun nouveau élèment disponible'})
       }
 
       for(let i = 0; i<sheetNames.length; i++){
@@ -26,69 +26,88 @@ const InitCreateEtudiant = async (req, res) => {
           })
       }
       fs.unlinkSync(req.file.destination+'/'+req.file.filename)
-      datas.push(niveauId)
-      datas.push(anneeUniversitaireId)
+
+      const niveauId = req.body.niveauId
+      const anneeUniversitaireId = req.body.anneeUniversitaireId
+
       try{
-          bulkCreateEtudiant(datas)
-          res.status(201).json({message: 'Data Uploaded'})
+          const currentCountRows = await Etudiant.count()
+          const bulkCreateEtudiant = Bc(datas, niveauId, anneeUniversitaireId)
+
+          Promise.all(bulkCreateEtudiant).then(async()=>{
+              const NewCountRows = await Etudiant.count()
+              const rowsAffected = NewCountRows - currentCountRows
+              rowsAffected > 0 ? 
+              res.status(201).json({statusCode: 'OK', message: `${rowsAffected} rows affected`}) :
+              res.status(200).json({statusCode: 'OK', message: 'No necessary rows to update'})
+          })
       }catch(err){
+          console.error(err)
           res.status(500).json({message: "An error occured"})
       }
   }catch(err){
-      res.status(500).json({message: err})
+      console.error(err)
+      res.status(500).json({message: err.stack})
   }
 }
 
-const bulkCreateEtudiant = (datas)=>{
-  datas.forEach(async data => {
+const Bc = (datas, niveauId, anneeUniversitaireId)=>{
+  const bc = datas.map(async data => {
     const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
-      telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, niveauId, anneeUniversitaireId, numero_passeport, code_redoublement  } = data
-        await Personne.findOne({
+      telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, code_redoublement } = data
+      const fetchedPerson = await Personne.findOne({
           include: {
               model: Etudiant
           },
           where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
-      }).then(async _p => {
-          if(_p){
-              return
-          }else{
-            await Inscrit.create({
-              Etudiant: {
-                nationalite,
-                numero_passeport,
-                date_naissance,
-                lieu_naissance,
-                cin,
-                numero_inscription,
-                date_delivranceCIN,
-                lieu_delivranceCIN,
-                situation_matrimoniale,
-                sexe,
-                adresse,
-                Personne: {
-                  nom,
-                  prenoms,
-                  telephone,
-                  email,
-                }
-              },
-        
-              niveauId,
-              anneeUniversitaireId,
-              code_redoublement,
-              photo_etudiant: req.file.path
-        
-            }, {
-              include: [{
-                model: Etudiant,
-                include: { model: Personne }
-              }]
-            }).then(etudiant => {
-              console.log({message: `Etudiant ${etudiant.Personne.nom} crée`})
-              })
-          }
       })
+      
+      if(fetchedPerson){
+          return
+      }else{
+          await Inscrit.create({
+            Etudiant: {
+              nationalite,
+              numero_passeport,
+              date_naissance,
+              lieu_naissance,
+              cin,
+              numero_inscription,
+              date_delivranceCIN,
+              lieu_delivranceCIN,
+              situation_matrimoniale,
+              sexe,
+              adresse,
+              Personne: {
+                nom,
+                prenoms,
+                telephone,
+                email,
+              }
+            },
+      
+            niveauId,
+            anneeUniversitaireId,
+            code_redoublement,
+            photo_etudiant: req.file.path
+      
+          }, {
+            include: [{
+              model: Etudiant,
+              include: { model: Personne }
+            }]
+          }).then(inscrit => {
+            res.status(201).json({ message: `${inscrit.Etudiant.Personne.nom} ${inscrit.Etudiant.Personne.prenoms} a été inscrit dans la base de données`, data: inscrit })
+      
+          }).catch(err => {
+            console.error(err)
+            res.status(500).json({ message: err })
+          })
+        
+      }
   })
+
+  return bc
 }
 
 
@@ -228,35 +247,23 @@ const updateEtudiant = asyncHandler(async (req, res) => {
     telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body 
     
     
-    const fetchedEtudiant = await Etudiant.findByPk(id,{
-          include: [
-            {
-              model: Personne,
-              include: {
-                model: Groupe,
-                include: {
-                  model: TrancheHoraire
-                }
-              }
-            },
-      
+    const fetchedEtudiant = await Etudiant.findOne({
+          include:              
             {
               model: Inscrit,
-              include: [{
+              include : {
                 model: Niveau
-              },
-              { model: AnneeUniversitaire }]
-            }
-      
-      
-          ]
+              } 
+            },
+            where: { id_etudiant : id }
         })
         
 
     if (!fetchedEtudiant) {
         res.status(400).json({message : 'this etudiant does not exist'})
     }
-        
+    
+   
     await Etudiant.update({
         
         nationalite,
@@ -284,7 +291,7 @@ const updateEtudiant = asyncHandler(async (req, res) => {
           code_redoublement,
           niveauId,
           anneeUniversitaireId
-        }, {where: { [Op.and]: [{ etudiantId : id }, { niveauId : fetchedEtudiant.Inscrits.niveauId }, {anneeUniversitaireId : fetchedEtudiant.Inscrits.anneeUniversitaireId}] }}).then(()=>{
+        }, {where: { [Op.and]: [{ etudiantId : id }, { niveauId : fetchedEtudiant.Inscrits[0].niveauId }, {anneeUniversitaireId : fetchedEtudiant.Inscrits[0].anneeUniversitaireId}] }}).then(()=>{
           res.status(200).json({
             message: 'Etudiant modifié'
           })

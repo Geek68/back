@@ -76,31 +76,36 @@ db.Absence.belongsTo(db.Personne, {
 })
 
 
-db.Etudiant.belongsToMany(db.Niveau, {through: db.Inscrit, foreignKey: 'etudiantId'})
-db.Niveau.belongsToMany(db.AnneeUniversitaire, {through: db.Inscrit, foreignKey: 'niveauId'})
-db.AnneeUniversitaire.belongsToMany(db.Etudiant, {through: db.Inscrit, foreignKey: 'anneeUniversitaireId'})
-
-
-db.Etudiant.hasMany(db.Inscrit,{
-    foreignKey: 'etudiantId', targetKey: 'id_etudiant'
-})
-db.Inscrit.belongsTo(db.Etudiant, {
-    foreignKey: 'etudiantId', targetKey: 'id_etudiant'
-})
-db.Niveau.hasMany(db.Inscrit,{
-    foreignKey: 'niveauId', targetKey: 'code_niveau'
-})
-db.Inscrit.belongsTo(db.Niveau, {
-    foreignKey: 'niveauId', targetKey: 'code_niveau'
-})
-
-db.AnneeUniversitaire.hasMany(db.Inscrit,{
-    foreignKey: 'anneeUniversitaireId', targetKey: 'id_anneeUniversitaire'
-})
-db.Inscrit.belongsTo(db.AnneeUniversitaire, {
-    foreignKey: 'anneeUniversitaireId', targetKey: 'id_anneeUniversitaire'
-})
-
+  // Define the hasMany and belongsTo associations
+  db.Etudiant.hasMany(db.Inscrit, {
+    foreignKey: 'etudiantId',
+    targetKey: 'id_etudiant'
+  });
+  
+  db.Inscrit.belongsTo(db.Etudiant, {
+    foreignKey: 'etudiantId',
+    targetKey: 'id_etudiant'
+  });
+  
+  db.Niveau.hasMany(db.Inscrit, {
+    foreignKey: 'niveauId',
+    targetKey: 'code_niveau'
+  });
+  
+  db.Inscrit.belongsTo(db.Niveau, {
+    foreignKey: 'niveauId',
+    targetKey: 'code_niveau'
+  });
+  
+  db.AnneeUniversitaire.hasMany(db.Inscrit, {
+    foreignKey: 'anneeUniversitaireId',
+    targetKey: 'id_anneeUniversitaire'
+  });
+  
+  db.Inscrit.belongsTo(db.AnneeUniversitaire, {
+    foreignKey: 'anneeUniversitaireId',
+    targetKey: 'id_anneeUniversitaire'
+  });
 
 
 db.Salle.hasMany(db.TrancheHoraire,{

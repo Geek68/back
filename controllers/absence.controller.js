@@ -84,7 +84,7 @@ const getOneAbsence = asyncHandler(async (req, res) => {
 
 const postAbsence = asyncHandler(async (req, res) => {
     const { personneIds, tranchehoraireId } = req.body
-    personneIds.map(async personneId => {
+    const abs = personneIds.map(async personneId => {
         const fetchedAbsence = await Absence.findOne({
             where: { [Op.and]: [{ personneId }, { tranchehoraireId }] }
         })
@@ -108,7 +108,11 @@ const postAbsence = asyncHandler(async (req, res) => {
 
     })
 
+    Promise.all(abs).then(()=>{
         res.status(201).json({message: 'Tous les personnes selectionnées sont ajoutées au liste des absents'})
+    })
+
+        
 
 
 })
@@ -128,7 +132,7 @@ const updateAbsence = asyncHandler(async (req, res) => {
             tranchehoraireId
     
         }, {
-            where: { [Op.and]: [{ personneId }, { tranchehoraireId }] }
+            where: { [Op.and]: [{ personneId: fetchedAbsence.personneId }, { tranchehoraireId: fetchedAbsence.tranchehoraireId  }] }
     
         }
         ).then(() => {

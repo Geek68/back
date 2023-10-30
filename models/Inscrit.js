@@ -27,29 +27,25 @@ db.Niveau = require('./Niveau')(sequelize, DataTypes)
 
 module.exports = (sequelize, DataTypes) =>{
     const Inscrit = sequelize.define('Inscrits', {
+      id_inscrit: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement : true
+
+      },
+
         etudiantId: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            references: {
-              model: db.Etudiant, 
-              key: 'id_etudiant'
-            }
+
           },
           niveauId: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            references: {
-              model: db.Niveau, 
-              key: 'code_niveau'
-            }
+
+
           },
         anneeUniversitaireId :{
             type: DataTypes.INTEGER,
-            primaryKey: true,
-            references: {
-              model: db.AnneeUniversitaire, 
-              key: 'id_anneeUniversitaire'
-            }
+
         },
 
         code_redoublement: {
@@ -60,7 +56,7 @@ module.exports = (sequelize, DataTypes) =>{
         photo_etudiant: {
             type: DataTypes.STRING,
             allowNull: true
-          },
+          }
     })
     return Inscrit
   
