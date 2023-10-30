@@ -284,7 +284,7 @@ const updateEtudiant = asyncHandler(async (req, res) => {
           code_redoublement,
           niveauId,
           anneeUniversitaireId
-        }, {where: { [Op.and]: [{ etudiantId : id }, { niveauId : `${fetchedEtudiant.Inscrits.niveauId}` }, {anneeUniversitaireId : `${fetchedEtudiant.Inscrits.anneeUniversitaireId}`}] }}).then(()=>{
+        }, {where: { [Op.and]: [{ etudiantId : id }, { niveauId : fetchedEtudiant.Inscrits.niveauId }, {anneeUniversitaireId : fetchedEtudiant.Inscrits.anneeUniversitaireId}] }}).then(()=>{
           res.status(200).json({
             message: 'Etudiant modifié'
           })
@@ -301,7 +301,7 @@ const updateEtudiant = asyncHandler(async (req, res) => {
 const deleteEtudiant = asyncHandler(async (req, res) => {
   let { id } = req.params
     const fetchedEtudiant = await Etudiant.findByPk(id,{
-        include: [{model: Personne}]
+        include: [{model: Personne}, {model: Inscrit}]
     })
     if(!fetchedEtudiant){
         res.status(400).json({message : "this Etudiant does not exist"});
@@ -313,6 +313,9 @@ const deleteEtudiant = asyncHandler(async (req, res) => {
             await Personne.destroy({
                 where : {id_personne : fetchedEtudiant.Personne.id_personne}
             })
+            await Inscrit.destroy({
+              where : {etudiantId : id}
+          })
             if(fs.existsSync(fetchedEtudiant.photo_etudiant)){        
                 fs.unlinkSync(fetchedEtudiant.photo_etudiant)
             }
