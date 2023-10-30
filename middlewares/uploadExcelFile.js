@@ -21,7 +21,12 @@ const checkFileType = (req, file, cb) => {
 let _uploadingFile = multer({storage : storage, limits:{fileSize: 1000000}, fileFilter : checkFileType})
 const uploadXlsxFile = (req, res, next) => {
     _uploadingFile.single('upload_file')(req, res, (error) => {
-        error ? res.status(400).json({message:error}) : next()
+        if(error){
+            console.error(error)
+            res.status(400).json({message:error.stack})
+        }else{
+            next()
+        }
     })
 }
 
