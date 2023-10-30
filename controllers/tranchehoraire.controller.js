@@ -28,6 +28,58 @@ const getAllTrancheHoraire = asyncHandler(async (req, res) => {
 }
 )
 
+const getTrancheHoraireByGroup = asyncHandler(async (req, res) => {
+
+    const {groupeId} = req.params
+
+    const TrancheHoraires = await TrancheHoraire.findAll({
+        where: {groupeId},
+        order:[['code_tranchehoraire', 'DESC']],
+        include: [{
+            model: Prof
+        },
+        {
+            model: Absence,
+            include: {
+                model: Personne,
+                include: {
+                    model: Etudiant
+                }
+            }
+        },
+   ]
+    })
+
+    res.status(200).json(TrancheHoraires)
+}
+)
+
+const getTrancheHoraireByProf = asyncHandler(async (req, res) => {
+
+    const {profId} = req.params
+
+    const TrancheHoraires = await TrancheHoraire.findAll({
+        where: {profId},
+        order:[['code_tranchehoraire', 'DESC']],
+        include: [{
+            model: Prof
+        },
+        {
+            model: Absence,
+            include: {
+                model: Personne,
+                include: {
+                    model: Etudiant
+                }
+            }
+        },
+   ]
+    })
+
+    res.status(200).json(TrancheHoraires)
+}
+)
+
 
 const getOneTrancheHoraire = asyncHandler(async (req, res) => {
     const trancheHoraire = await TrancheHoraire.findByPk(req.params.id,{
@@ -138,4 +190,6 @@ module.exports = {
     postTrancheHoraire,
     updateTrancheHoraire,
     deleteTrancheHoraire,
+    getTrancheHoraireByGroup,
+    getTrancheHoraireByProf
 }
