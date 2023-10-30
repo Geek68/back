@@ -208,7 +208,7 @@ const postEtudiant = asyncHandler(async (req, res) => {
 
     }).catch(err => {
       console.error(err)
-      res.status(500).json({ message: err.parent.detail })
+      res.status(500).json({ message: err })
     })
   } catch (error) {
     res.status(500).json({ message: error })
@@ -226,13 +226,38 @@ const updateEtudiant = asyncHandler(async (req, res) => {
   let { id } = req.params
   const { nom, prenoms, date_naissance, lieu_naissance, cin, date_delivranceCIN, lieu_delivranceCIN,
     telephone, email, sexe, situation_matrimoniale, adresse, nationalite, numero_inscription, numero_passeport, niveauId, code_redoublement, anneeUniversitaireId } = req.body 
-        const fetchedEtudiant = await Etudiant.findByPk(id)
+    
+    
+    const fetchedEtudiant = await Etudiant.findByPk(id,{
+          include: [
+            {
+              model: Personne,
+              include: {
+                model: Groupe,
+                include: {
+                  model: TrancheHoraire
+                }
+              }
+            },
+      
+            {
+              model: Inscrit,
+              include: [{
+                model: Niveau
+              },
+              { model: AnneeUniversitaire }]
+            }
+      
+      
+          ]
+        })
+        
 
     if (!fetchedEtudiant) {
         res.status(400).json({message : 'this etudiant does not exist'})
     }
         
-    await Inscrit.update({
+    await Etudiant.update({
         
         nationalite,
         numero_passeport,
@@ -245,31 +270,26 @@ const updateEtudiant = asyncHandler(async (req, res) => {
         situation_matrimoniale,
         sexe,
         adresse,
-        Personne: {
-          nom,
-          prenoms,
-          telephone,
-          email,
-        },
-   
-        niveauId,
-        anneeUniversitaireId,
-        code_redoublement, 
       
 
       
     },{
-        where: { etudiantId: id }
-    },{include: [{
-      model: Etudiant,
-      include: { model: Personne }
-    }]})
-    .then(_ => {
-        Etudiant.findByPk(id,{
-            include : {
-                model: Personne
-            }
-        }).then(etudiant => res.status(200).json({ data: etudiant, message: 'Etudiant updated' }))
+        where: { id_etudiant: id }
+    })
+    .then(async () => {
+       await Personne.update({
+        nom, prenoms, email, telephone
+       },{where : {id_personne : fetchedEtudiant.personneId}}).then(async()=>{
+        await Inscrit.update({
+          code_redoublement,
+          niveauId,
+          anneeUniversitaireId
+        }, {where: { [Op.and]: [{ etudiantId : id }, { niveauId : `${fetchedEtudiant.Inscrits.niveauId}` }, {anneeUniversitaireId : `${fetchedEtudiant.Inscrits.anneeUniversitaireId}`}] }}).then(()=>{
+          res.status(200).json({
+            message: 'Etudiant modifié'
+          })
+        })
+       }) 
     })
     .catch(err => {
         console.error(err)
@@ -349,4 +369,5 @@ module.exports = {
   deleteEtudiant,
   getPromotion,
   updateEtudiantPic,
+  InitCreateEtudiant
 };

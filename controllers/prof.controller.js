@@ -172,41 +172,40 @@ const FindProfById = async (req, res) => {
 const UpdateProf = async (req, res) => {
     const { nom, prenoms, 
         telephone, email, titre, fonction } = req.body  
-        const fetchedProf = await Prof.findByPk(id)
+        const fetchedProf = await Prof.findByPk(req.params.id)
 
     if (!fetchedProf) {
         res.status(400).json({message : 'this Prof does not exist'})
-    }
-    console.log(fetchedProf.personneId)    
-    await Prof.update({
-        titre,
-        fonction,
-      
-    },{ where : {
-        code_prof : req.params.id
-    }
-
-    
-    })
-    .then(async () => {
-     
-        await Personne.update({
-            nom, prenoms, email, telephone
-        }, { where : {
-            id_personne : fetchedProf.personneId
+    } else {
+        Prof.update({
+            titre,
+            fonction,
+          
+        },{ where : {
+            code_prof : req.params.id
         }
     
         
-        }).then(() => {
-            res.status(200).json({
-                message: `Prof modifié avec succès`
+        })
+        .then(async () => {
+         
+            Personne.update({
+                nom, prenoms, email, telephone
+            }, { where : {
+                id_personne : fetchedProf.personneId
+            }
+        
+            }).then(() => {
+                res.status(200).json({
+                    message: `Prof modifié avec succès`
+                })
             })
         })
-    })
-    .catch(err => {
-        console.error(err)
-        res.status(500).json({ message: err })
-    })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ message: err })
+        })
+    }
 }
 
 const UpadteProfPic = async (req, res) => {
