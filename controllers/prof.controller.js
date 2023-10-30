@@ -30,8 +30,16 @@ const InitCreateProf = async (req, res) => {
         fs.unlinkSync(req.file.destination+'/'+req.file.filename)
 
         try{
-            bulkCreateProf(datas)
-            res.status(201).json({message: 'Data Uploaded'})
+            const currentCountRows = await Prof.count()
+            const bulkCreateProf = Bc(datas)
+
+            Promise.all(bulkCreateProf).then(async()=>{
+                const NewCountRows = await Prof.count()
+                const rowsAffected = NewCountRows - currentCountRows
+                rowsAffected > 0 ? 
+                res.status(201).json({message: `${rowsAffected} rows affected`}) :
+                res.status(200).json({message: 'No necessary rows to update'})
+            })
         }catch(err){
             res.status(500).json({message: "An error occured"})
         }
@@ -40,36 +48,38 @@ const InitCreateProf = async (req, res) => {
     }
 }
 
-const bulkCreateProf = (datas)=>{
-    datas.forEach(async data => {
+const Bc = (datas)=>{
+    const bc = datas.map(async data => {
         const {photo_prof, nom, prenoms, titre, fonction, email, telephone} = data
-        await Personne.findOne({
+        const fetchedPerson = await Personne.findOne({
             include: {
                 model: Prof
             },
             where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
-        }).then(async _p => {
-            if(_p){
-                return
-            }else{
-                await Prof.create({
-                        titre : titre,
-                        fonction : fonction,
-                        photo_prof : photo_prof,
-                        Personne : {
-                            nom : nom,
-                            prenoms : prenoms,
-                            telephone : `+${telephone}`,
-                            email : email,
-                        }                       
-                },{
-                    include: Personne
-                }).then(prof => {
-                    CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)                      
-                })
-            }
         })
+        
+        if(fetchedPerson){
+            return
+        }else{
+            await Prof.create({
+                    titre : titre,
+                    fonction : fonction,
+                    photo_prof : photo_prof,
+                    Personne : {
+                        nom : nom,
+                        prenoms : prenoms,
+                        telephone : `+${telephone}`,
+                        email : email,
+                    }                       
+            },{
+                include: Personne
+            }).then(prof => {
+                CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)                      
+            })
+        }
     })
+
+    return bc
 }
 
 const FindProf = async (req, res) => {
