@@ -1,5 +1,5 @@
 const db = require('../models')
-const {Groupe, Niveau,Prof,Etudiant,Inscrit, Personne, TrancheHoraire} = db
+const {Groupe, Semestre, EC, Prof,Etudiant,Inscrit, Personne, TrancheHoraire, TypeTrancheHoraire} = db
 const asyncHandler = require('express-async-handler')
 
 
@@ -21,7 +21,14 @@ const getAllGroupe = asyncHandler(async (req, res) => {
         },
         {
            model: TrancheHoraire,
-           
+           include : [{
+            model : EC
+           },
+        {model: Prof,
+        include: {
+            model: Personne
+        }}]
+  
         }
        ]
     })
@@ -39,8 +46,9 @@ const getOneGroupe = asyncHandler(async (req, res) => {
                 include: [{
                     model: Etudiant,
                     include: {
-                        model : Inscrit 
+                        model : Inscrit
                     }
+                    
                 },
             {
                 model: Prof
