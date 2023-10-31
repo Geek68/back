@@ -84,33 +84,50 @@ const getOneAbsence = asyncHandler(async (req, res) => {
 
 const postAbsence = asyncHandler(async (req, res) => {
     const { personneIds, tranchehoraireId } = req.body
-    const abs = personneIds.map(async personneId => {
-        const fetchedAbsence = await Absence.findOne({
-            where: { [Op.and]: [{ personneId }, { tranchehoraireId }] }
+
+    if(personneIds.lenght === 0){
+        await TrancheHoraire.udpate({
+            isValider: true
+        },{where : {code_tranchehoraire : tranchehoraireId }}).then(()=> {
+            res.status(200).json({
+                message: "Toutes les personnes sont présentes "
+            })
         })
-
-         if (fetchedAbsence) {
-                res.status(400).json({message: "Absence déja existant"})
-            } else {
-                 await Absence.create({
-                    personneId,
-                    tranchehoraireId
-                }).then(()=> {
-                    res.status(200).json({
-                        'message': "Personne ajoutée à la liste des absents.",                       
+       
+    }
+    else {
+        const abs = personneIds.map(async personneId => {
+            const fetchedAbsence = await Absence.findOne({
+                where: { [Op.and]: [{ personneId }, { tranchehoraireId }] }
+            })
+    
+             if (fetchedAbsence) {
+                    res.status(400).json({message: "Absence déja existant"})
+                } else {
+                     await Absence.create({
+                        personneId,
+                        tranchehoraireId
+                    }).then(()=> {
+                        console.log({
+                            'message': "Personne ajoutée à la liste des absents.",                       
+                        })
+                    }).catch(err => {
+                        res.status(400).json({message: err})
+    
                     })
-                }).catch(err => {
-                    res.status(400).json({message: err})
+                          
+                }
+    
+        })
+        Promise.all(abs).then(async ()=>{
+            await TrancheHoraire.udpate({
+                isValider: true
+            },{where : {code_tranchehoraire : tranchehoraireId }})
+            res.status(201).json({message: 'Tous les personnes selectionnées sont ajoutées au liste des absents'})
+        })
+    }
 
-                })
-                      
-            }
-
-    })
-
-    Promise.all(abs).then(()=>{
-        res.status(201).json({message: 'Tous les personnes selectionnées sont ajoutées au liste des absents'})
-    })
+    
 
         
 

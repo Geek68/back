@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) =>{
           allowNull: false
     },
 
+        isValider : {
+          type: DataTypes.BOOLEAN,
+          defaultValue : false
+        }
+    
+
     })
     return TrancheHoraire
   
