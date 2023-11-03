@@ -169,7 +169,7 @@ const FindProfById = async (req, res) => {
     })
 }
 
-const UpdateProf = async (req, res) => {
+const UpdateProfBasicInfo = async (req, res) => {
     const { nom, prenoms, 
         telephone, email, titre, fonction } = req.body  
         const fetchedProf = await Prof.findByPk(req.params.id)
@@ -199,6 +199,31 @@ const UpdateProf = async (req, res) => {
                 res.status(200).json({
                     message: `Prof modifié avec succès`
                 })
+            })
+        })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ message: err })
+        })
+    }
+}
+
+
+const UpdateProfAccountInfo = async (req, res) => {
+    const { login } = req.body  
+        const fetchedProf = await Prof.findByPk(req.params.id)
+    if (!fetchedProf) {
+        res.status(400).json({message : 'this Prof does not exist'})
+    } else {
+        UserAccount.update({
+            login,
+        },{ where : {
+            profId : req.params.id
+        }
+        })
+        .then(() => {
+            res.status(200).json({
+                message: `Information de connexion modifiée avec succès`
             })
         })
         .catch(err => {
@@ -261,7 +286,8 @@ module.exports = {
     CreateProf,
     FindProf,
     FindProfById,
-    UpdateProf,
+    UpdateProfBasicInfo,
+    UpdateProfAccountInfo,
     DeleteProf,
     UpadteProfPic
 }
