@@ -95,7 +95,7 @@ const postSalle = asyncHandler(async (req, res) => {
                 }
                 ).then(() => {
                     
-                    res.status(200).send('Salle modifiée')
+                    res.status(200).json({message : 'Salle modifiée'})
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})
                 })   
@@ -104,12 +104,16 @@ const postSalle = asyncHandler(async (req, res) => {
 
     const deleteSalle = asyncHandler(async (req,res)=>{
         const fetchedSalle = await Salle.findByPk(req.params.id);
-    if (!fetchedSalle) {
-        res.status(400).json({message : "Salle non existante" });
-    }
+        if (!fetchedSalle) {
+            res.status(400).json({message : "Salle non existante" });
+        }
 
-    await Salle.destroy({where:{code_Salle: req.params.id}});
-    res.status(200).json({message : `Salle ${fetchedSalle.numero_salle} supprimée`});
+        await Salle.destroy({where:{code_salle: req.params.id}})
+        .then(_=>{
+            res.status(200).send({message : `Salle ${fetchedSalle.numero_salle} supprimée`});
+        }).catch(err =>{
+            res.status(500).json({message: err})
+        });
 
     })
 

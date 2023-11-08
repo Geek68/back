@@ -62,8 +62,7 @@ const getOneEC = asyncHandler(async (req, res) => {
 const postEC = asyncHandler(async (req, res) => {
     const { nom_element, niveauId  } = req.body
 
-    const fetchedEC = await EC.findOne({ where: {nom_element}
-})
+    const fetchedEC = await EC.findOne({ where: {nom_element} })
 
     if (fetchedEC) {
         res.status(400).json({message: "EC déja existant"})
@@ -71,11 +70,11 @@ const postEC = asyncHandler(async (req, res) => {
         const ec = await EC.create({
             nom_element,
             niveauId
-        })
-
-        res.status(200).json({
-            'message': "EC ajouté avec succès.",
-            'EC': ec
+        }).then(EC => {
+            res.status(200).json({
+                'message': "EC ajouté avec succès.",
+                'EC': EC
+            })
         })
     }
 })
@@ -100,7 +99,7 @@ const postEC = asyncHandler(async (req, res) => {
                 }
                 ).then(() => {
                     
-                    res.status(200).json(`Element constitutif ${req.params.id} modifié`)
+                    res.status(200).json({message : `Element constitutif ${req.params.id} modifié`})
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})
                 })   

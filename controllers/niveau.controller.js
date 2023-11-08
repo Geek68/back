@@ -92,7 +92,7 @@ const postNiveau = asyncHandler(async (req, res) => {
                 }
                 ).then(() => {
                     
-                    res.status(200).send('Niveau modifiée')
+                    res.status(200).json({message:'Niveau modifiée'})
                 }).catch(err => {
                     res.status(500).json({message: err.parent.detail})
                 })   
