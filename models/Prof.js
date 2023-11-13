@@ -4,20 +4,18 @@ module.exports = (sequelize, DataTypes) =>{
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
-          },
-       
+        },
         titre:{
             type: DataTypes.STRING,
             allowNull: true,
         },
-
         photo_prof:{
             type: DataTypes.STRING,
             allowNull: true,
         },
         fonction:{
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         }
       
       

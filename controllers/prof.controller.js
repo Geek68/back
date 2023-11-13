@@ -9,7 +9,6 @@ const { Prof, Personne, EC, TrancheHoraire, UserAccount } = db
 
 
 const InitCreateProf = async (req, res) => {
-    console.log("\n\n\n", req.file, "\n\n\n")
     const datas = []
     try{
         const file = reader.readFile(req.file.destination+'/'+req.file.filename)
@@ -116,12 +115,12 @@ const CreateProf = async (req, res) => {
         .then(async _p => {
             if(_p){
                 res.status(400).json({message : 'Cette personne deja existant'})
-                fs.unlinkSync(req.file.path)
+                req.file && fs.unlinkSync(req.file.path)
             }else{
                 await Prof.create({
                         titre,
                         fonction,
-                        photo_prof : req.file.path,
+                        photo_prof : req.file ? req.file.path : null,
                         Personne : {
                             nom,
                             prenoms,
@@ -135,7 +134,6 @@ const CreateProf = async (req, res) => {
                 }).then(prof => {
                         res.status(201).json({message: `${prof.Personne.nom} ${prof.Personne.prenoms} a été enregistré dans la base de données`, data:prof})
                         CreateUserAccount(prof.Personne.nom, prof.Personne.prenoms, prof.code_prof)
-                    
                 }).catch(err =>{
                     console.error(err)
                     res.status(500).json({message: err.parent.detail})
@@ -143,7 +141,7 @@ const CreateProf = async (req, res) => {
             
             }
         }).catch(err => {
-            fs.unlinkSync(req.file.path)
+            req.file && fs.unlinkSync(req.file.path)
             res.status(500).json({message: err})
         })
 
