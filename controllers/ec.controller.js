@@ -69,7 +69,7 @@ const postEC = asyncHandler(async (req, res) => {
     } else {
         const ec = await EC.create({
             nom_element,
-            niveauId
+            niveauId: niveauId || niveauId!=0 ? niveauId : null
         }).then(EC => {
             res.status(200).json({
                 'message': "EC ajouté avec succès.",
@@ -89,8 +89,7 @@ const postEC = asyncHandler(async (req, res) => {
         
                 await EC.update({
                     nom_element,
-                    niveauId
-                   
+                    niveauId: niveauId || niveauId!=0 ? niveauId : null
                 },{ where : {
                     code_element : req.params.id
                 }

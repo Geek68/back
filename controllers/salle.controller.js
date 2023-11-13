@@ -1,4 +1,5 @@
 const db = require('../models')
+const { Op } = require('sequelize')
 const {Salle, TrancheHoraire,Personne, Etudiant, Groupe} = db
 const asyncHandler = require('express-async-handler')
 
@@ -55,8 +56,7 @@ const getOneSalle = asyncHandler(async (req, res) => {
 const postSalle = asyncHandler(async (req, res) => {
     const { numero_salle, localisation_salle, capacite_salle } = req.body
 
-    const fetchedSalle = await Salle.findOne({ where: {numero_salle}
-})
+    const fetchedSalle = await Salle.findOne({ where: {[Op.and]: [{numero_salle}, {localisation_salle}]} })
 
     if (fetchedSalle) {
         res.status(400).json({message: "Salle déja existant"})

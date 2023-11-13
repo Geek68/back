@@ -39,7 +39,7 @@ const InitCreateProf = async (req, res) => {
                 const rowsAffected = NewCountRows - currentCountRows
                 rowsAffected > 0 ? 
                 res.status(201).json({statusCode: 'OK', message: `${rowsAffected} rows affected`}) :
-                res.status(200).json({statusCode: 'OK', message: 'No necessary rows to update'})
+                res.status(200).json({statusCode: 'OK', message: 'No necessary rows to upload'})
             })
         }catch(err){
             console.error(err)
@@ -58,7 +58,7 @@ const Bc = (datas)=>{
             include: {
                 model: Prof
             },
-            where: { [Op.or]: [{ telephone : `+${telephone}` }, { email }] }
+            where: { [Op.and]: [{ nom }, { prenoms }] }
         })
         
         if(fetchedPerson){
